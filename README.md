@@ -14,7 +14,10 @@ Since this is a simple and small project, all you have to do to install is downl
 Once downloaded onto your pc, simply add the project to your unity project list, and it will all be ready for you to work on
 
 ## Contributing
-If you happen to find this and for some reason are in a goofy enough mood to help, simply give me a message on discord (Vallarae) and send a link to the branch you are working on so that I can add it to the main project. However, this is a private repo, so if you somehow have found it please tell me how :pray: (I mainly put this bit in to make the readme fill less empty ;-;)
+If you somehow find this and are in a goofy enough mood to help, feel free to message me on Discord (user: Vallarae) and send a link to the branch you're working on so I can merge it.
+
+That said, this *is* a private repo-so if you're reading this and aren't supposed to be here, please tell me how you got in 🙏
+(This section mostly exists so the README looks less empty ;-;)
 
 ## License
 Doesn't exist rn, just credit me if you for some reason end up using this, because it took me a lot of time to make ;-;
