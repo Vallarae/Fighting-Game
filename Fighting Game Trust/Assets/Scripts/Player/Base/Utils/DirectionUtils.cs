@@ -15,14 +15,33 @@ namespace Player.Base.Utils {
             _ => Vector2Int.zero
         };
 
+        private static readonly int[,] _inputToValue = {
+            { 7, 8, 9 },
+            { 4, 5, 6 },
+            { 1, 2, 3 }
+        };
+
+        public static int GetDirection(Vector2 directionInput) {
+            int x = Mathf.RoundToInt(directionInput.x);
+            int y = Mathf.RoundToInt(directionInput.y);
+
+            x = Mathf.Clamp(x, -1, 1);
+            y = Mathf.Clamp(y, -1, 1);
+
+            int column = x + 1;
+            int row = 1 - y;
+
+            return _inputToValue[row, column];
+        }
+
         public static bool DirectionMatches(int required, int actual, int tolerance) {
             if (required == 10) return true;
             if (required == actual) return true;
             if (tolerance == 0) return false;
-            
+
             Vector2Int r = NumpadToVector(required);
             Vector2Int a = NumpadToVector(actual);
-            
+
             return Vector2Int.Distance(r, a) <= tolerance;
         }
     }

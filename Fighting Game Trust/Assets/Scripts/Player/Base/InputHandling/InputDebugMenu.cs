@@ -1,9 +1,10 @@
-﻿using TMPro;
+﻿using Player.Base.Controller;
+using TMPro;
 using UnityEngine;
 
-
 /*
- * Don't even bother optimizing this rn, will probably be replaced later (16/01/25)
+ * Don't even bother optimizing this rn, will probably be replaced later (16/01/26)
+ * FUCK THE NAMING CONVENTIONS, I AM ADDING DIFFERENT SHIT IN HERE (18/01/26)
  */
 namespace Player.Base.InputHandling {
     public class InputDebugMenu : MonoBehaviour {
@@ -13,6 +14,7 @@ namespace Player.Base.InputHandling {
         [Space]
 
         public TMP_Text directionText;
+        public TMP_Text speedText;
         public TMP_Text frameText;
 
         [Space] 
@@ -24,9 +26,11 @@ namespace Player.Base.InputHandling {
         
         private Input _latestInput;
         private InputReader _inputReader;
+        private PlayerController _player;
 
         private void Start() {
             _inputReader = GetComponent<InputReader>();
+            _player = GetComponent<PlayerController>();
 
             if (!showDebugMenu) {
                 Destroy(debugMenu);
@@ -39,8 +43,9 @@ namespace Player.Base.InputHandling {
         private void Update() {
             _latestInput = _inputReader.GetLastInput();
 
-            directionText.text = _latestInput.direction.ToString();
-            frameText.text = _latestInput.frames.ToString();
+            directionText.text = "Direction: " + _latestInput.direction;
+            speedText.text = "Speed: " + _player.rigidbody.linearVelocity.x;
+            frameText.text = "Frame: " +_latestInput.frames;
 
             punchText.text = "Punching: " + _latestInput.punchButtonDown;
             kickText.text = "Kicking: " + _latestInput.kickButtonDown;

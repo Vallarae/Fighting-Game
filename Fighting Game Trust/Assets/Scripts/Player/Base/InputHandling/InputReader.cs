@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Player.Base.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,11 +8,6 @@ namespace Player.Base.InputHandling {
     public class InputReader : MonoBehaviour {
         
         #region Variables
-        private readonly int[,] _inputToValue = {
-            { 7, 8, 9 },
-            { 4, 5, 6 },
-            { 1, 2, 3 }
-        };
 
         private Vector2 _directionInput;
         private bool _punchButtonDown;
@@ -79,7 +75,7 @@ namespace Player.Base.InputHandling {
         #region Getters
         private Input CreateInput() {
             return new Input {
-                direction = GetDirection(),
+                direction = DirectionUtils.GetDirection(_directionInput),
                 frames = 0,
                 punchButtonDown = _punchButtonDown,
                 slashButtonDown = _slashButtonDown,
@@ -87,19 +83,6 @@ namespace Player.Base.InputHandling {
                 kickButtonDown = _kickButtonDown,
                 dashButtonDown = _dashButtonDown
             };
-        }
-
-        private int GetDirection() {
-            int x = Mathf.RoundToInt(_directionInput.x);
-            int y = Mathf.RoundToInt(_directionInput.y);
-            
-            x = Mathf.Clamp(x, -1, 1);
-            y = Mathf.Clamp(y, -1, 1);
-
-            int column = x + 1;
-            int row = 1 - y;
-            
-            return _inputToValue[row, column];
         }
 
         public Input GetLastInput() {
