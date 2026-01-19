@@ -166,7 +166,7 @@ MonoBehaviour:
   recoveryFramesAfterCombo: 5
   dashCooldown: 0
   damage: 5
-  hitbox: {fileID: 2257506511336150350, guid: e21522b2e8292ad48b6e0bc07aa39c99, type: 3}
+  hitbox: {fileID: 7802034122580066542, guid: 3e738e8c731028142bb3a6891ea71cbd, type: 3}
   test: []
 --- !u!114 &29737792
 MonoBehaviour:
@@ -1197,7 +1197,7 @@ MonoBehaviour:
   recoveryFramesAfterCombo: 5
   dashCooldown: 0
   damage: 5
-  hitbox: {fileID: 2257506511336150350, guid: e21522b2e8292ad48b6e0bc07aa39c99, type: 3}
+  hitbox: {fileID: 7802034122580066542, guid: 3e738e8c731028142bb3a6891ea71cbd, type: 3}
   test: []
 --- !u!114 &776999934
 MonoBehaviour:
