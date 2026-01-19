@@ -72,6 +72,14 @@ namespace Player.Base.InputHandling {
         
         #endregion
         
+        #region Setters
+
+        public void ClearInputList() {
+            _recentInputs.Clear();
+        }
+        
+        #endregion
+        
         #region Getters
         private Input CreateInput() {
             return new Input {

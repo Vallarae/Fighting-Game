@@ -1,5 +1,6 @@
 ﻿using Player.Base.Attacks.Base;
 using Player.Base.Controller;
+using Player.Base.HitboxLookup;
 using Player.Base.Interfaces;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace Player.Base.Attacks.Damage {
         private void FixedUpdate() {
             _frames++;
 
-            if (_frames >= _attack.framesToImpact()) {
+            if (_frames >= _attack.FramesHitDuration()) {
                 Destroy(gameObject);
             }
         }
@@ -27,6 +28,10 @@ namespace Player.Base.Attacks.Damage {
             IDamageable damageable = other.GetComponent<IDamageable>();
 
             if (ReferenceEquals(damageable, null)) return;
+            
+            PlayerController player = PlayerRegistry.GetPlayer(other);
+            if (ReferenceEquals(player, null)) return;
+            if (ReferenceEquals(player, _player)) return;
             
             damageable.Damage(_player.damage);
         }

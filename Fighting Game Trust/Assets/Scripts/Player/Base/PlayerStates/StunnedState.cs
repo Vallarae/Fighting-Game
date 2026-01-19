@@ -20,6 +20,7 @@ namespace Player.Base.PlayerStates {
 
         public void Tick() {
             _frame++;
+            Debug.Log($"frame {_frame}");
             
             if (_frame >= _player.recoveryFrames && _combo < 3)
                 UpdateState();
@@ -34,7 +35,8 @@ namespace Player.Base.PlayerStates {
         
         public void Exit() { }
 
-        public void Reset() {
+        public void ExtraHit() {
+            _combo++;
             _frame = 0;
         }
         

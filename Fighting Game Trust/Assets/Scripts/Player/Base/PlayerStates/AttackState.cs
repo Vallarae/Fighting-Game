@@ -1,6 +1,7 @@
 ﻿using Player.Base.Attacks.Base;
 using Player.Base.Controller;
 using Player.Base.StateMachineSystem;
+using UnityEngine;
 
 namespace Player.Base.PlayerStates {
     public class AttackState : IState {
@@ -20,12 +21,20 @@ namespace Player.Base.PlayerStates {
 
         public void Tick() {
             _frame++;
+            
+            if (_frame == _attack.FramesToImpact()) {
+                _attack.OnAttack();
+                return;
+            }
 
-            if (_frame >= _attack.framesToEnd()) {
+            if (_frame >= _attack.FramesToEnd()) {
                 _attack.End();
-                _player.fms.ChangeState(_player.movement);
+                _player.inputReader.ClearInputList();
+                _player.fms.ChangeState(isGrounded ? _player.movement : _player.aerial);
             }
         }
         public void Exit() { }
+        
+        private bool isGrounded => Physics.Raycast(_player.gameObject.transform.position, Vector3.down, 1.2f, LayerMask.GetMask("Ground"));
     }
 }

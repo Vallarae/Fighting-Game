@@ -3,17 +3,21 @@ using Player.Base.InputHandling;
 
 /*
  * Damage is done though hitboxes, not this function
+ *
+ * Need an implementation that is exposed to the unity editor for easier character creation
  */
 namespace Player.Base.Attacks.Base {
     public interface IAttack {
-        public int framesToImpact();
-        public int framesToEnd();
-        public int framesHitDuration(); //used to give the hitbox a life time
+        public int FramesToImpact();
+        public int FramesToEnd();
+        public int FramesHitDuration(); //used to give the hitbox a life-time
 
         public void Enter();
         public void End();
 
         public AttackStance RequiredStance();
+
+        public void OnAttack();
         
         public bool LowBlockable(); //this value is used when an attack news a low block to be blocked
 

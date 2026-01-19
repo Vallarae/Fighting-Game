@@ -154,18 +154,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4b906f1f30145368ccefa80c211c8a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.Base.Controller.PlayerController
-  walkSpeed: 5
-  runSpeed: 15
-  dashTowards: 5
-  dashAway: 5
-  acceleration: 5
-  deceleration: 5
-  jumpForce: 5
+  walkSpeed: 5.41
+  runSpeed: 10
+  dashTowards: 8.81
+  dashAway: 8
+  acceleration: 30
+  deceleration: 30
+  jumpForce: 12
   health: 100
   recoveryFrames: 5
   recoveryFramesAfterCombo: 5
   dashCooldown: 0
   damage: 5
+  hitbox: {fileID: 2257506511336150350, guid: e21522b2e8292ad48b6e0bc07aa39c99, type: 3}
+  test: []
 --- !u!114 &29737792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1142,6 +1144,7 @@ GameObject:
   - component: {fileID: 776999934}
   - component: {fileID: 776999933}
   - component: {fileID: 776999932}
+  - component: {fileID: 776999941}
   m_Layer: 0
   m_Name: TestPlayer
   m_TagString: Player
@@ -1188,12 +1191,14 @@ MonoBehaviour:
   dashAway: 8
   acceleration: 30
   deceleration: 30
-  jumpForce: 5
+  jumpForce: 12
   health: 100
   recoveryFrames: 5
   recoveryFramesAfterCombo: 5
   dashCooldown: 0
   damage: 5
+  hitbox: {fileID: 2257506511336150350, guid: e21522b2e8292ad48b6e0bc07aa39c99, type: 3}
+  test: []
 --- !u!114 &776999934
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1493,6 +1498,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!75 &776999941
+ConstantForce:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 776999931}
+  m_Enabled: 1
+  m_Force: {x: 0, y: -0.31, z: 0}
+  m_RelativeForce: {x: 0, y: 0, z: 0}
+  m_Torque: {x: 0, y: 0, z: 0}
+  m_RelativeTorque: {x: 0, y: 0, z: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

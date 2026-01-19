@@ -5,6 +5,12 @@ using Player.Base.Utils;
 using UnityEngine;
 using Input = Player.Base.InputHandling.Input;
 
+/*
+ * While this script is working as intended, I think it would be good to add some more leniency to the attacks, as they feel qutie jank right now
+ * we can leave this for now because there is still more that needs to be added
+ * - V (19/01/26)
+ */
+
 namespace Player.Base.Attacks.Base {
     public class AttackResolver {
         private readonly PlayerController _player;
@@ -47,7 +53,7 @@ namespace Player.Base.Attacks.Base {
                 bool found = false;
 
                 while (bufferIndex >= 0 && framesWaited <= maxGap) {
-                    if (InputMatches(required[req], buffer[bufferIndex], tolerance)) {
+                    if (InputMatches(InputDirectionValidation(required[req]), buffer[bufferIndex], tolerance)) {
                         found = true;
                         bufferIndex--;
                         break;
@@ -61,6 +67,19 @@ namespace Player.Base.Attacks.Base {
             }
 
             return true;
+        }
+
+        //This function is in charge of changing the directions of an input for directional based attacks
+        private Input InputDirectionValidation(Input old) {
+            if (old.direction == 10) return old;
+            if (_player.DirectionToOtherPlayer() == -1) return old;
+            Vector2Int dir = DirectionUtils.NumpadToVector(old.direction);
+            dir.x *= -1;
+            int direction = DirectionUtils.GetDirection(dir);
+            Input newInput = old;
+            newInput.direction = direction;
+
+            return newInput;
         }
 
         private bool InputMatches(Input required, Input actual, int tolerance) {

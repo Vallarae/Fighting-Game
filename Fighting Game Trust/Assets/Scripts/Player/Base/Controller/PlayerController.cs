@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Player.Base.Attacks.Base;
+using Player.Base.Attacks.Damage;
 using Player.Base.Attacks.DefaultAttacks;
 using Player.Base.HitboxLookup;
 using Player.Base.InputHandling;
@@ -30,13 +31,16 @@ namespace Player.Base.Controller {
         public int dashCooldown;
         public int damage;
 
+        public GameObject hitbox;
+
+        public List<MonoBehaviour> test;
         public List<IAttack> attacks;
         public AttackResolver attackResolver;
         
         public MovementState movement;
         public AerialState aerial;
         public CrouchState crouch;
-        public StunnedState stunned;
+        private StunnedState _stunned;
 
         public GameObject otherPlayer { get; private set; }
         
@@ -51,12 +55,14 @@ namespace Player.Base.Controller {
             movement = new MovementState(this);
             aerial = new  AerialState(this);
             crouch = new CrouchState(this);
+            _stunned = new StunnedState(this);
             
             currentHealth = maxHealth();
 
             attacks = new List<IAttack>();
             
-            attacks.Add(new DefaultKick());
+            attacks.Add(new DefaultKick(this));
+            attacks.Add(new TestComplexAttack(this));
             
             PlayerRegistry.AddPlayer(GetComponent<Collider>(), this);
             FindOtherPlayer();
@@ -77,12 +83,17 @@ namespace Player.Base.Controller {
             Gizmos.DrawLine(transform.position + Vector3.up * 1.5f, otherPlayer.transform.position);
         }
 
+        //this can be optimized
         private void FindOtherPlayer() {
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
             GameObject playerOne = players[0];
             GameObject playerTwo = players[1];
 
             otherPlayer = ReferenceEquals(playerOne, gameObject) ? playerTwo : playerOne;
+        }
+
+        private void TakeKnockback(float force) {
+            rigidbody.AddForce(Vector3.right * DirectionToOtherPlayer() * force, ForceMode.Impulse);
         }
 
         public int DirectionToOtherPlayer() {
@@ -93,7 +104,10 @@ namespace Player.Base.Controller {
         
         public void Damage(int amount) {
             health -= amount;
-            fms.ChangeState(stunned);
+            if (fms.currentState != _stunned) fms.ChangeState(_stunned);
+            else _stunned.ExtraHit();
+            TakeKnockback(5f);
+            Debug.Log($"damaged {amount}");
         }
 
         public int maxHealth() {
@@ -104,5 +118,12 @@ namespace Player.Base.Controller {
 
         public bool IsAerial() => fms.currentState == aerial;
         public bool IsCrouching() => fms.currentState == crouch;
+
+        //this function is intended for non-moving hitboxes, for moving ones use animations
+        public void SpawnHitbox(Vector3 position, Vector3 size, IAttack attack) {
+            Damager damager = Instantiate(hitbox, position, Quaternion.identity).GetComponent<Damager>();
+            damager.gameObject.transform.localScale = size;
+            damager.Initialise(this, attack);
+        }
     }
 }
