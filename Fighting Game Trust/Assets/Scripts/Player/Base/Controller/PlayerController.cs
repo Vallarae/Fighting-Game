@@ -107,7 +107,6 @@ namespace Player.Base.Controller {
             if (fms.currentState != _stunned) fms.ChangeState(_stunned);
             else _stunned.ExtraHit();
             TakeKnockback(5f);
-            Debug.Log($"damaged {amount}");
         }
 
         public int maxHealth() {
