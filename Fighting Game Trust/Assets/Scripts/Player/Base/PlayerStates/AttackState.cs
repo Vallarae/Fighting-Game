@@ -6,10 +6,10 @@ using UnityEngine;
 namespace Player.Base.PlayerStates {
     public class AttackState : IState {
         private readonly PlayerController _player;
-        private readonly IAttack _attack;
+        private readonly Attack _attack;
         private int _frame;
 
-        public AttackState(PlayerController player, IAttack attack) {
+        public AttackState(PlayerController player, Attack attack) {
             _player = player;
             _attack = attack;
         }
@@ -22,13 +22,13 @@ namespace Player.Base.PlayerStates {
         public void Tick() {
             _frame++;
             
-            if (_frame == _attack.FramesToImpact()) {
+            if (_frame == _attack.FramesToImpact) {
                 _attack.OnAttack();
                 return;
             }
 
-            if (_frame >= _attack.FramesToEnd()) {
-                _attack.End();
+            if (_frame >= _attack.FramesToEnd) {
+                _attack.Exit();
                 _player.InputReader.ClearInputList();
                 _player.Fms.ChangeState(IsGrounded ? _player.movement : _player.aerial);
             }

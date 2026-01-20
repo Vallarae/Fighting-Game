@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Player.Base.Attacks.Base.Validator;
+using Player.Base.Attacks.Base.Validator.Base;
 using Player.Base.Controller;
-using Player.Base.PlayerStates;
-using Player.Base.Utils;
-using UnityEngine;
 using Input = Player.Base.InputHandling.Input;
 
 /*
@@ -24,135 +22,122 @@ namespace Player.Base.Attacks.Base {
 
         private const int BaseInputScore = 100;
         private const int ComplexityBonus = 50;
-        private const int ButtonScore = 200;
-        private const int ButtonBufferFrames = 8;
 
         public AttackResolver(PlayerController player) {
             _player = player;
+            Initialise();
         }
 
-        public IAttack Resolve() {
-            if (_player.Fms.CurrentState is AttackState) return null;
+        public Dictionary<Attack, InputValidator> attackInputs;
+        public List<Attack> attacks;
 
-            IReadOnlyList<Input> buffer = _player.InputReader.GetRecentInputs();
+        private void Initialise() {
+            attacks = _player.attacks;
 
-            IAttack bestAttack = null;
-            int bestScore = int.MinValue;
+            foreach (Attack attack in attacks) {
+                InputValidator validator = new InputValidator();
 
-            foreach (IAttack attack in _player.attacks) {
-                if (!ContextValid(attack)) continue;
+                for (int i = 0; i < attack.directionInputs.Count; i++) {
+                    DirectionValidator inputValidator = new DirectionValidator {
+                        direction = attack.directionInputs[i]
+                    };
+                    validator.directions.Add(inputValidator);
+                }
+                
+                ButtonValidation buttonValidation = new ButtonValidation {
+                    button = attack.button
+                };
 
-                if (TryMatchAttack(attack, buffer, out int score)) {
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestAttack = attack;
+                validator.button = buttonValidation;
+
+                attackInputs.Add(attack, validator);
+            }
+        }
+
+        public void Tick() {
+            foreach (Attack attack in attacks) {
+                InputValidator validator = attackInputs[attack];
+
+                Input recentInput = _player.InputReader.GetRecentInputs()[^1];
+
+                for (int i = 0; i < validator.directions.Count; i++) {
+                    DirectionValidator directionValidator = validator.directions[i];
+
+                    if (directionValidator.performed) continue;
+                    
+                    if (directionValidator.direction == recentInput.direction) {
+                        directionValidator.performed = true;
+                        validator.Validate(recentInput.direction);
+                        
+                        break;
                     }
                 }
-            }
 
-            return bestAttack;
+                bool rightButton = attack.button switch {
+                    ButtonType.Punch => recentInput.punchButtonDown,
+                    ButtonType.Kick => recentInput.kickButtonDown,
+                    ButtonType.Slash => recentInput.slashButtonDown,
+                    ButtonType.HeavySlash => recentInput.heavyButtonDown,
+                    _ => false
+                };
+                
+                ButtonValidation buttonValidation = validator.button;
+                buttonValidation.performed = rightButton;
+                
+                validator.button = buttonValidation;
+                validator.Validate();
+                
+                validator.frames++;
+            }
         }
 
-        private bool ContextValid(IAttack attack) {
-            return attack.RequiredStance() switch {
+        public Attack Resolve() {
+            List<ValidAttack> validAttacks = new List<ValidAttack>();
+            
+            for (int i = 0; i < attacks.Count; i++) {
+                Attack attack =  attacks[i];
+                InputValidator validator = attackInputs[attack];
+                
+                if (!ContextValid(attack)) continue;
+                if (!validator.IsValid()) continue;
+
+                ValidAttack validAttack = new ValidAttack {
+                    attack = attack,
+                    points = CalculatePoints(attack)
+                };
+                
+                validAttacks.Add(validAttack);
+            }
+            
+            if (validAttacks.Count == 0) return null;
+
+            ValidAttack chosenAttack = new ValidAttack();
+
+            foreach (ValidAttack attack in validAttacks) {
+                if (ReferenceEquals(chosenAttack.attack, null))
+                    chosenAttack = attack;
+
+                if (chosenAttack.points < attack.points)
+                    chosenAttack = attack;
+            }
+
+            return chosenAttack.attack;
+        }
+
+        private int CalculatePoints(Attack attack) {
+            int score = BaseInputScore + ComplexityBonus * attack.directionInputs.Count;
+            
+            return score;
+        }
+
+        private bool ContextValid(Attack attack) {
+            return attack.RequiredStance switch {
                 AttackStance.Any => true,
                 AttackStance.Standing => !_player.IsAerial() && !_player.IsCrouching(),
                 AttackStance.Crouching => _player.IsCrouching(),
                 AttackStance.Aerial => _player.IsAerial(),
                 _ => false
             };
-        }
-
-        private bool TryMatchAttack(IAttack attack, IReadOnlyList<Input> buffer, out int score) {
-            score = 0;
-            
-            List<Input> required = attack.RequiredInputs();
-            int maxGap = attack.MaxInputGap();
-            int tolerance = attack.DirectionTolerance();
-
-            int bufferIndex = buffer.Count - 1;
-
-            for (int req = required.Count - 1; req >= 0; req--) {
-                Input requiredInput = InputDirectionValidation(required[req]);
-
-                bool found = false;
-                int framesWaited = 0;
-
-                for (int i = bufferIndex; i >= 0 && framesWaited <= maxGap; i--) {
-                    if (DirectionOnlyMatch(requiredInput, buffer[i], tolerance)) {
-                        found = true;
-                        bufferIndex = i - 1;
-                        
-                        score += BaseInputScore;
-                        score -= framesWaited;
-                    }
-                    
-                    framesWaited += Mathf.Max(1, buffer[i].frames);
-                }
-
-                if (!found) return false;
-            }
-
-            if (!MatchBufferedButton(required, buffer, bufferIndex, out int buttonScore)) return false;
-
-            score += buttonScore;
-
-            score += required.Count * ComplexityBonus;
-
-            return true;
-        }
-
-        private bool DirectionOnlyMatch(Input required, Input actual, int tolerance) {
-            return DirectionUtils.DirectionMatches(
-                required.direction,
-                actual.direction,
-                tolerance
-            );
-        }
-
-        private bool MatchBufferedButton(List<Input> required, IReadOnlyList<Input> buffer, int startIndex, out int score) {
-            score = 0;
-
-            Input buttonRequired = required.Find(i => 
-                i.punchButtonDown ||
-                i.kickButtonDown ||
-                i.slashButtonDown ||
-                i.heavyButtonDown
-            );
-
-            int framesWaited = 0;
-
-            for (int i = startIndex; i >= 0 && framesWaited <= ButtonBufferFrames; i--) {
-                if (ButtonMatches(buttonRequired, buffer[i])) {
-                    score += ButtonScore;
-                    score -= framesWaited;
-                    return true;
-                }
-
-                framesWaited += Math.Max(1, buffer[i].frames);
-            }
-
-            return false;
-        }
-
-        private bool ButtonMatches(Input required, Input actual) {
-            if (required.punchButtonDown && !actual.punchButtonDown) return false;
-            if (required.kickButtonDown && !actual.kickButtonDown) return false;
-            if (required.slashButtonDown && !actual.slashButtonDown) return false;
-            return !(required.heavyButtonDown && !actual.heavyButtonDown);
-        }
-
-        private Input InputDirectionValidation(Input old) {
-            if (old.direction == 10) return old;
-            if (_player.DirectionToOtherPlayer() == -1) return old;
-            
-            Vector2Int dir = DirectionUtils.NumpadToVector(old.direction);
-            dir.x *= -1;
-
-            Input newInput = old;
-            newInput.direction = DirectionUtils.GetDirection(dir);
-
-            return newInput;
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Player.Base.PlayerStates {
         }
 
         public void Tick() {
-            IAttack attack = _player.attackResolver.Resolve();
+            Attack attack = _player.attackResolver.Resolve();
             if (attack != null) {
                 _player.Fms.ChangeState(new AttackState(_player, attack));
                 return;

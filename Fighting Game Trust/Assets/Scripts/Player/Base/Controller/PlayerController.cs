@@ -33,7 +33,7 @@ namespace Player.Base.Controller {
         public Damager hitbox;
 
         public List<MonoBehaviour> test;
-        public List<IAttack> attacks;
+        public List<Attack> attacks;
         public AttackResolver attackResolver;
         
         public MovementState movement;
@@ -58,10 +58,7 @@ namespace Player.Base.Controller {
             
             CurrentHealth = MaxHealth();
 
-            attacks = new List<IAttack>();
-            
-            attacks.Add(new DefaultKick(this));
-            attacks.Add(new TestComplexAttack(this));
+            attacks = new List<Attack>();
             
             PlayerRegistry.AddPlayer(GetComponent<Collider>(), this);
             FindOtherPlayer();
@@ -73,6 +70,7 @@ namespace Player.Base.Controller {
 
         private void FixedUpdate() {
             Fms.Tick();
+            attackResolver.Tick();
         }
 
         private void OnDrawGizmos() {
