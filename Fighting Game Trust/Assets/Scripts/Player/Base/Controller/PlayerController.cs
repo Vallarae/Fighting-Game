@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Player.Base.Attacks.Base;
 using Player.Base.Attacks.Damage;
 using Player.Base.Attacks.DefaultAttacks;
@@ -14,9 +13,9 @@ namespace Player.Base.Controller {
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(InputReader))]
     public class PlayerController : MonoBehaviour, IDamageable, IHealth {
-        public StateMachine fms { get; private set; }
-        public InputReader inputReader { get; private set; }
-        public new Rigidbody rigidbody { get; private set; }
+        public StateMachine Fms { get; private set; }
+        public InputReader InputReader { get; private set; }
+        public Rigidbody Rigidbody { get; private set; }
 
         public float walkSpeed;
         public float runSpeed;
@@ -31,7 +30,7 @@ namespace Player.Base.Controller {
         public int dashCooldown;
         public int damage;
 
-        public GameObject hitbox;
+        public Damager hitbox;
 
         public List<MonoBehaviour> test;
         public List<IAttack> attacks;
@@ -42,22 +41,22 @@ namespace Player.Base.Controller {
         public CrouchState crouch;
         private StunnedState _stunned;
 
-        public GameObject otherPlayer { get; private set; }
+        private GameObject OtherPlayer { get; set; }
         
         private int _currentHealth;
 
         private void Awake() {
-            fms = new StateMachine();
+            Fms = new StateMachine();
             attackResolver = new AttackResolver(this);
-            inputReader = GetComponent<InputReader>();
-            rigidbody = GetComponent<Rigidbody>();
+            InputReader = GetComponent<InputReader>();
+            Rigidbody = GetComponent<Rigidbody>();
             
             movement = new MovementState(this);
             aerial = new  AerialState(this);
             crouch = new CrouchState(this);
             _stunned = new StunnedState(this);
             
-            currentHealth = maxHealth();
+            CurrentHealth = MaxHealth();
 
             attacks = new List<IAttack>();
             
@@ -69,18 +68,18 @@ namespace Player.Base.Controller {
         }
 
         private void Start() {
-            fms.ChangeState(movement);
+            Fms.ChangeState(movement);
         }
 
         private void FixedUpdate() {
-            fms.Tick();
+            Fms.Tick();
         }
 
         private void OnDrawGizmos() {
             FindOtherPlayer();
             Gizmos.color = DirectionToOtherPlayer() == 1 ?  Color.red : Color.green;
             
-            Gizmos.DrawLine(transform.position + Vector3.up * 1.5f, otherPlayer.transform.position);
+            Gizmos.DrawLine(transform.position + Vector3.up * 1.5f, OtherPlayer.transform.position);
         }
 
         //this can be optimized
@@ -89,38 +88,37 @@ namespace Player.Base.Controller {
             GameObject playerOne = players[0];
             GameObject playerTwo = players[1];
 
-            otherPlayer = ReferenceEquals(playerOne, gameObject) ? playerTwo : playerOne;
+            OtherPlayer = ReferenceEquals(playerOne, gameObject) ? playerTwo : playerOne;
         }
 
         private void TakeKnockback(float force) {
-            rigidbody.AddForce(Vector3.right * DirectionToOtherPlayer() * force, ForceMode.Impulse);
+            Rigidbody.AddForce(Vector3.right * DirectionToOtherPlayer() * force, ForceMode.Impulse);
         }
 
         public int DirectionToOtherPlayer() {
-            Vector3 directionVector = (transform.position -  otherPlayer.transform.position).normalized;
+            Vector3 directionVector = (transform.position -  OtherPlayer.transform.position).normalized;
             
             return Mathf.RoundToInt(directionVector.x);
         }
         
         public void Damage(int amount) {
             health -= amount;
-            if (fms.currentState != _stunned) fms.ChangeState(_stunned);
+            if (Fms.CurrentState != _stunned) Fms.ChangeState(_stunned);
             else _stunned.ExtraHit();
             TakeKnockback(5f);
         }
 
-        public int maxHealth() {
+        public int MaxHealth() {
             return health;
         }
 
-        public int currentHealth { get; set; }
+        public int CurrentHealth { get; set; }
 
-        public bool IsAerial() => fms.currentState == aerial;
-        public bool IsCrouching() => fms.currentState == crouch;
-
-        //this function is intended for non-moving hitboxes, for moving ones use animations
+        public bool IsAerial() => Fms.CurrentState == aerial;
+        public bool IsCrouching() => Fms.CurrentState == crouch;
+        
         public void SpawnHitbox(Vector3 position, Vector3 size, IAttack attack) {
-            Damager damager = Instantiate(hitbox, position, Quaternion.identity).GetComponent<Damager>();
+            Damager damager = Instantiate(hitbox, position, Quaternion.identity);
             damager.gameObject.transform.localScale = size;
             damager.Initialise(this, attack);
         }

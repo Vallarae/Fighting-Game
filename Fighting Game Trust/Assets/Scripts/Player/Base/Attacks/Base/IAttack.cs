@@ -6,6 +6,7 @@ using Player.Base.InputHandling;
  *
  * Need an implementation that is exposed to the unity editor for easier character creation
  */
+
 namespace Player.Base.Attacks.Base {
     public interface IAttack {
         public int FramesToImpact();

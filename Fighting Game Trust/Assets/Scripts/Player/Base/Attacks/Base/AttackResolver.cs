@@ -7,12 +7,15 @@ using UnityEngine;
 using Input = Player.Base.InputHandling.Input;
 
 /*
- * While this script is working as intended, I think it would be good to add some more leniency to the attacks, as they feel qutie jank right now
+ * While this script is working as intended, I think it would be good to add some more leniency to the attacks, as they feel jank right now
  * we can leave this for now because there is still more that needs to be added
  * - V (19/01/26)
  *
  * so ICL I'm recoding everything in here ;-;
  * - V (19/01/26)
+ *
+ * WHY DOES IT NOT WORK CORRECT
+ * - V (20/01/26)
  */
 
 namespace Player.Base.Attacks.Base {
@@ -29,9 +32,9 @@ namespace Player.Base.Attacks.Base {
         }
 
         public IAttack Resolve() {
-            if (_player.fms.currentState is AttackStance) return null;
+            if (_player.Fms.CurrentState is AttackState) return null;
 
-            IReadOnlyList<Input> buffer = _player.inputReader.GetRecentInputs();
+            IReadOnlyList<Input> buffer = _player.InputReader.GetRecentInputs();
 
             IAttack bestAttack = null;
             int bestScore = int.MinValue;
@@ -116,8 +119,6 @@ namespace Player.Base.Attacks.Base {
                 i.slashButtonDown ||
                 i.heavyButtonDown
             );
-
-            if (ReferenceEquals(buttonRequired, null)) return true;
 
             int framesWaited = 0;
 

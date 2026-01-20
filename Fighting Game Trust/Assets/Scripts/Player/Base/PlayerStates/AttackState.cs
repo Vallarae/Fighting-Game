@@ -29,12 +29,12 @@ namespace Player.Base.PlayerStates {
 
             if (_frame >= _attack.FramesToEnd()) {
                 _attack.End();
-                _player.inputReader.ClearInputList();
-                _player.fms.ChangeState(isGrounded ? _player.movement : _player.aerial);
+                _player.InputReader.ClearInputList();
+                _player.Fms.ChangeState(IsGrounded ? _player.movement : _player.aerial);
             }
         }
         public void Exit() { }
         
-        private bool isGrounded => Physics.Raycast(_player.gameObject.transform.position, Vector3.down, 1.2f, LayerMask.GetMask("Ground"));
+        private bool IsGrounded => Physics.Raycast(_player.gameObject.transform.position, Vector3.down, 1.2f, LayerMask.GetMask("Ground"));
     }
 }

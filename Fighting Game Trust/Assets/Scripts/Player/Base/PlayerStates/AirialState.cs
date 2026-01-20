@@ -24,15 +24,15 @@ namespace Player.Base.PlayerStates {
             _hasDoubleJump = false;
             _canDoubleJump = false;
             
-            Input input = _player.inputReader.GetLastInput();
+            Input input = _player.InputReader.GetLastInput();
 
             Vector2Int dir = DirectionUtils.NumpadToVector(input.direction);
             
             Vector2 direction = dir;
             direction.x /= 2.5f;
             
-            _player.rigidbody.AddForce(direction * _player.jumpForce, ForceMode.Impulse);
-            _player.rigidbody.linearVelocity = new Vector2(0, _player.rigidbody.linearVelocity.y);
+            _player.Rigidbody.AddForce(direction * _player.jumpForce, ForceMode.Impulse);
+            _player.Rigidbody.linearVelocity = new Vector2(0, _player.Rigidbody.linearVelocity.y);
 
             _canDash = true;
             _dashCooldown = _player.dashCooldown;
@@ -41,7 +41,7 @@ namespace Player.Base.PlayerStates {
         public void Tick() {
             IAttack attack = _player.attackResolver.Resolve();
             if (attack != null) {
-                _player.fms.ChangeState(new AttackState(_player, attack));
+                _player.Fms.ChangeState(new AttackState(_player, attack));
                 return;
             }
             
@@ -57,11 +57,11 @@ namespace Player.Base.PlayerStates {
 
             _dashCooldown--;
             
-            Input input = _player.inputReader.GetLastInput(); //gets the most recent input from the player
+            Input input = _player.InputReader.GetLastInput(); //gets the most recent input from the player
             Vector2Int dir = DirectionUtils.NumpadToVector(input.direction);
 
             if (isGrounded) {
-                _player.fms.ChangeState(_player.movement);
+                _player.Fms.ChangeState(_player.movement);
                 return;
             }
 
@@ -70,12 +70,12 @@ namespace Player.Base.PlayerStates {
             if (_dashCooldown <= 0) DoDash(input, dir);
 
             if (_canDoubleJump && !_hasDoubleJump && dir.y > 0) {
-                _player.rigidbody.linearVelocity = Vector2.zero;
+                _player.Rigidbody.linearVelocity = Vector2.zero;
 
                 Vector2 direction = dir;
                 direction.x /= 2.5f;
                 
-                _player.rigidbody.AddForce(direction * _player.jumpForce, ForceMode.Impulse);
+                _player.Rigidbody.AddForce(direction * _player.jumpForce, ForceMode.Impulse);
                 _hasDoubleJump = true;
                 _canDoubleJump = false;
                 _canDash = false;
@@ -92,7 +92,7 @@ namespace Player.Base.PlayerStates {
             Vector2 direction = dir;
             direction.y = 0;
             
-            _player.rigidbody.AddForce(direction * dashForceToUse, ForceMode.Impulse);
+            _player.Rigidbody.AddForce(direction * dashForceToUse, ForceMode.Impulse);
             _dashCooldown = _player.dashCooldown;
             _canDash = false;
             _hasDoubleJump = true;

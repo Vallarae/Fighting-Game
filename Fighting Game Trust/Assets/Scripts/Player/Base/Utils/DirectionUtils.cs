@@ -15,6 +15,32 @@ namespace Player.Base.Utils {
             _ => Vector2Int.zero
         };
 
+        public static Vector3 GetDebugGUIMenuPosition(int direction) => direction switch {
+            1 => new (-50, -50),
+            2 => new (0, -50),
+            3 => new (50, -50),
+            4 => new (-50, 0),
+            5 => new (0, 0),
+            6 => new (50, 0),
+            7 => new (-50, 50),
+            8 => new (0, 50),
+            9 => new (50, 50),
+            _ => new (0, 0)
+        };
+        
+        public static Vector2 GetLinePosition(int direction) => direction switch {
+            1 => new (4.16f, -0.59f),
+            2 => new (4.95f, -0.59f),
+            3 => new (5.69f, -0.59f),
+            4 => new (4.16f, 0.17f),
+            5 => new (4.95f, 0.17f),
+            6 => new (5.69f, 0.17f),
+            7 => new (4.16f, 0.95f),
+            8 => new (4.95f, 0.95f),
+            9 => new (5.69f, 0.95f),
+            _ => new (0, 0)
+        };
+
         private static readonly int[,] _inputToValue = {
             { 7, 8, 9 },
             { 4, 5, 6 },

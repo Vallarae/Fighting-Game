@@ -17,20 +17,20 @@ namespace Player.Base.PlayerStates {
             GameObject playerObject = _player.gameObject;
             playerObject.transform.localScale = new Vector3(1, 0.5f, 1);
             playerObject.transform.position = new Vector3(_player.transform.position.x, _player.transform.position.y - 0.5f, _player.transform.position.z);
-            _player.rigidbody.linearVelocity = Vector2.zero;
+            _player.Rigidbody.linearVelocity = Vector2.zero;
         }
 
         public void Tick() {
             IAttack attack = _player.attackResolver.Resolve();
             if (attack != null) {
-                _player.fms.ChangeState(new AttackState(_player, attack));
+                _player.Fms.ChangeState(new AttackState(_player, attack));
                 return;
             }
             
-            Input input = _player.inputReader.GetLastInput();
+            Input input = _player.InputReader.GetLastInput();
             Vector2Int dir = DirectionUtils.NumpadToVector(input.direction);
             
-            if (dir.y > -1) _player.fms.ChangeState(_player.movement);
+            if (dir.y > -1) _player.Fms.ChangeState(_player.movement);
         }
 
         public void Exit() {

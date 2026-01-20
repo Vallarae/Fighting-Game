@@ -29,7 +29,7 @@ namespace Player.Base.PlayerStates {
         public void Tick() {
             IAttack attack = _player.attackResolver.Resolve();
             if (attack != null) {
-                _player.fms.ChangeState(new AttackState(_player, attack));
+                _player.Fms.ChangeState(new AttackState(_player, attack));
                 return;
             }
 
@@ -40,16 +40,16 @@ namespace Player.Base.PlayerStates {
         public void Exit() { }
 
         private void HandleMovement() {
-            Input input = _player.inputReader.GetLastInput(); //gets the most recent input from the player
+            Input input = _player.InputReader.GetLastInput(); //gets the most recent input from the player
             Vector2Int dir = DirectionUtils.NumpadToVector(input.direction);
 
             if (dir.y > 0) {
-                _player.fms.ChangeState(_player.aerial);
+                _player.Fms.ChangeState(_player.aerial);
                 return;
             }
 
             if (dir.y < 0) {
-                _player.fms.ChangeState(_player.crouch);
+                _player.Fms.ChangeState(_player.crouch);
                 return;
             }
             
@@ -68,13 +68,13 @@ namespace Player.Base.PlayerStates {
             //maybe stop the movement for a few frames after the dash ?
 
             float targetSpeed = dir.x * _speedToUse;
-            float speedDifference = targetSpeed - _player.rigidbody.linearVelocity.x;
+            float speedDifference = targetSpeed - _player.Rigidbody.linearVelocity.x;
 
             float accelerationRate = Mathf.Abs(targetSpeed) > 0.01f ? _player.acceleration : _player.deceleration;
 
             float movement = Mathf.Pow(Math.Abs(speedDifference) * accelerationRate, 1) * Mathf.Sign(speedDifference);
 
-            _player.rigidbody.AddForce(movement * Vector3.right);
+            _player.Rigidbody.AddForce(movement * Vector3.right);
         }
 
         private void DoDash(Input input, Vector2Int dir) {
@@ -90,13 +90,11 @@ namespace Player.Base.PlayerStates {
             float dashForceToUse = isTowards ? _player.dashTowards : _player.dashAway;
 
             if (isTowards) _speedToUse = _player.runSpeed;
-            Debug.Log(isTowards);
-            Debug.Log(_speedToUse);
 
             Vector2 direction = dir;
             direction.y = 0;
             
-            _player.rigidbody.AddForce(direction * dashForceToUse, ForceMode.Impulse);
+            _player.Rigidbody.AddForce(direction * dashForceToUse, ForceMode.Impulse);
             _dashCooldown = _player.dashCooldown;
             _canDash = false;
         }

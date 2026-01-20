@@ -1,4 +1,7 @@
-﻿using Player.Base.Controller;
+﻿using System.Collections.Generic;
+using System.Net;
+using Player.Base.Controller;
+using Player.Base.Utils;
 using TMPro;
 using UnityEngine;
 
@@ -10,27 +13,31 @@ namespace Player.Base.InputHandling {
     public class InputDebugMenu : MonoBehaviour {
         public bool showDebugMenu;
         public GameObject debugMenu;
-
+        
         [Space]
 
-        public TMP_Text directionText;
-        public TMP_Text speedText;
-        public TMP_Text frameText;
+        public GameObject inputTextPrefab;
+        public RectTransform spawnPosition;
 
         [Space] 
-        
-        public TMP_Text punchText;
-        public TMP_Text kickText;
-        public TMP_Text slashText;
-        public TMP_Text heavySlashText;
+        public GameObject directionDebug;
+        public List<RectTransform> directionToPositions;
+        public LineRenderer lineRenderer;
         
         private Input _latestInput;
+        private Input _latestUsedInput;
         private InputReader _inputReader;
         private PlayerController _player;
+
+        private GameObject _currentUsedInputText;
+        
+        private List<GameObject> _existingInputs;
 
         private void Start() {
             _inputReader = GetComponent<InputReader>();
             _player = GetComponent<PlayerController>();
+
+            _existingInputs = new List<GameObject>();
 
             if (!showDebugMenu) {
                 Destroy(debugMenu);
@@ -39,18 +46,77 @@ namespace Player.Base.InputHandling {
             
             if (ReferenceEquals(_inputReader, null)) Destroy(gameObject);
         }
-        
+
         private void Update() {
             _latestInput = _inputReader.GetLastInput();
 
-            directionText.text = "Direction: " + _latestInput.direction;
-            speedText.text = "Speed: " + _player.rigidbody.linearVelocity.x;
-            frameText.text = "Frame: " +_latestInput.frames;
+            if (!_player.InputReader.SameInput(_latestInput, _latestUsedInput)) {
+                _currentUsedInputText = Instantiate(inputTextPrefab, spawnPosition);
+                _latestUsedInput = _latestInput;
 
-            punchText.text = "Punching: " + _latestInput.punchButtonDown;
-            kickText.text = "Kicking: " + _latestInput.kickButtonDown;
-            slashText.text = "Slash: " + _latestInput.slashButtonDown;
-            heavySlashText.text = "Heavy Slash: " + _latestInput.heavyButtonDown;
+                if (_existingInputs.Count != 0) {
+                    foreach (GameObject text in _existingInputs) {
+                        text.transform.position -= new Vector3(0, 100, 0);
+                    }
+                }
+            }
+
+            if (ReferenceEquals(_currentUsedInputText, null)) {
+                _currentUsedInputText = Instantiate(inputTextPrefab, spawnPosition);
+            }
+
+            TMP_Text[] texts = _currentUsedInputText.GetComponentsInChildren<TMP_Text>();
+
+            texts[0].text = CreateText();
+            texts[1].text = _latestInput.frames.ToString();
+
+            if (!_existingInputs.Contains(_currentUsedInputText)) {
+                _existingInputs.Add(_currentUsedInputText);
+            }
+
+            if (_existingInputs.Count == 20) {
+                GameObject input = _existingInputs[0];
+                _existingInputs.Remove(input);
+                Destroy(input);
+            }
+
+            var recentInputs = _inputReader.GetRecentInputs();
+            int inputCount = recentInputs.Count;
+
+            int drawCount = Mathf.Min(inputCount, 5);
+            lineRenderer.positionCount = drawCount;
+            
+            for (int i = 0; i < drawCount; i++) {
+                int inputIndex = inputCount - 1 - i;
+
+                Vector3 pos = DirectionUtils.GetLinePosition(recentInputs[inputIndex].direction);
+                lineRenderer.SetPosition(i, pos);
+            }
+        }
+
+        //<Sprite=50>
+        
+        private string CreateText() {
+            string text = _latestUsedInput.direction switch {
+                1 => "<Sprite=38> ",
+                2 => "<Sprite=39> ",
+                3 => "<Sprite=40> ",
+                4 => "<Sprite=41> ",
+                5 => "<Sprite=42> ",
+                6 => "<Sprite=43> ",
+                7 => "<Sprite=44> ",
+                8 => "<Sprite=45> ",
+                9 => "<Sprite=50> ",
+                _ => "<Sprite=0> "
+            };
+
+            if (_latestUsedInput.punchButtonDown) text += "<Sprite=35> ";
+            if (_latestUsedInput.kickButtonDown) text += "<Sprite=33> ";
+            if (_latestUsedInput.slashButtonDown) text += "<Sprite=36> ";
+            if (_latestUsedInput.heavyButtonDown) text += "<Sprite=34> ";
+            if (_latestUsedInput.dashButtonDown) text += "<Sprite=13> ";
+
+            return text;
         }
     }
 }

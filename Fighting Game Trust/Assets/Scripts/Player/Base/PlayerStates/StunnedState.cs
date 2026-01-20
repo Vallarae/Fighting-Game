@@ -29,7 +29,7 @@ namespace Player.Base.PlayerStates {
         }
 
         private void UpdateState() {
-            _player.fms.ChangeState(isGrounded ? _player.movement : _player.aerial);
+            _player.Fms.ChangeState(IsGrounded ? _player.movement : _player.aerial);
         }
         
         public void Exit() { }
@@ -39,6 +39,6 @@ namespace Player.Base.PlayerStates {
             _frame = 0;
         }
         
-        private bool isGrounded => Physics.Raycast(_player.gameObject.transform.position, Vector3.down, 1.2f, LayerMask.GetMask("Ground"));
+        private bool IsGrounded => Physics.Raycast(_player.gameObject.transform.position, Vector3.down, 1.2f, LayerMask.GetMask("Ground"));
     }
 }

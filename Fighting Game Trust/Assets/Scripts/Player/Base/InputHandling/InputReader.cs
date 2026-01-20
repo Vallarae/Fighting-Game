@@ -104,7 +104,7 @@ namespace Player.Base.InputHandling {
         
         #region Checkers
 
-        private bool SameInput(Input a, Input b) {
+        public bool SameInput(Input a, Input b) {
             return a.direction == b.direction
                    && a.punchButtonDown == b.punchButtonDown
                    && a.slashButtonDown == b.slashButtonDown
