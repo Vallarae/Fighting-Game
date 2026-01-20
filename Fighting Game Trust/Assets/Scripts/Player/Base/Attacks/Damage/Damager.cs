@@ -7,9 +7,9 @@ using UnityEngine;
 namespace Player.Base.Attacks.Damage {
     public class Damager : MonoBehaviour {
         private PlayerController _player;
-        private IAttack _attack;
+        private Attack _attack;
 
-        public void Initialise(PlayerController player, IAttack attack) {
+        public void Initialise(PlayerController player, Attack attack) {
             _player = player;
             _attack = attack;
         }
@@ -19,7 +19,7 @@ namespace Player.Base.Attacks.Damage {
         private void FixedUpdate() {
             _frames++;
 
-            if (_frames >= _attack.FramesHitDuration()) {
+            if (_frames >= _attack.HitboxLifetime) {
                 Destroy(gameObject);
             }
         }

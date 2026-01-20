@@ -4,11 +4,11 @@ using Player.Base.Controller;
 using UnityEngine;
 using Input = Player.Base.InputHandling.Input;
 
-namespace Player.Base.Attacks.DefaultAttacks{
-    public class TestComplexAttack : IAttack{
+namespace Player.Base.Attacks.DefaultAttacks {
+    public class DefaultKick : IAttack {
         private readonly PlayerController _player;
 
-        public TestComplexAttack(PlayerController player) {
+        public DefaultKick(PlayerController player) {
             _player = player;
         }
         
@@ -39,11 +39,11 @@ namespace Player.Base.Attacks.DefaultAttacks{
             Vector3 spawnPoint = _player.transform.position - new Vector3(_player.DirectionToOtherPlayer(), 0, 0);
             Vector3 size = new Vector3(1, 1, 1);
             
-            _player.SpawnHitbox(spawnPoint, size, this);
+            //_player.SpawnHitbox(spawnPoint, size, this);
         }
 
         public AttackStance RequiredStance() {
-            return AttackStance.Any;
+            return AttackStance.Standing;
         }
 
         public bool LowBlockable() {
@@ -51,35 +51,20 @@ namespace Player.Base.Attacks.DefaultAttacks{
         }
         
         public List<Input> RequiredInputs() {
-            Input inputOne = new Input {
-                direction = 6
-            };
-
-            Input inputTwo = new Input {
-                direction = 3
-            };
-
-            Input inputThree = new Input {
-                direction = 2
-            };
-
-            Input inputFour = new Input {
-                punchButtonDown = true
+            Input input = new Input {
+                direction = 10,
+                kickButtonDown = true
             };
             
             List<Input> inputs = new List<Input>();
-            inputs.Add(inputOne);
-            inputs.Add(inputTwo);
-            inputs.Add(inputThree);
-            inputs.Add(inputFour);
+            inputs.Add(input);
             
             return inputs;
         }
 
         public int MaxInputGap() {
-            return 3;
+            return 1;
         }
-        
         public int DirectionTolerance() {
             return 1;
         }

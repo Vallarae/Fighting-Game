@@ -50,6 +50,7 @@ namespace Player.Base.InputHandling {
         private void Update() {
             _latestInput = _inputReader.GetLastInput();
 
+            
             if (!_player.InputReader.SameInput(_latestInput, _latestUsedInput)) {
                 _currentUsedInputText = Instantiate(inputTextPrefab, spawnPosition);
                 _latestUsedInput = _latestInput;

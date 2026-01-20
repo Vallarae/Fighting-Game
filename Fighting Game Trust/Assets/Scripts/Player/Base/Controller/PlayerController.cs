@@ -47,22 +47,28 @@ namespace Player.Base.Controller {
 
         private void Awake() {
             Fms = new StateMachine();
-            attackResolver = new AttackResolver(this);
-            InputReader = GetComponent<InputReader>();
-            Rigidbody = GetComponent<Rigidbody>();
-            
-            movement = new MovementState(this);
-            aerial = new  AerialState(this);
-            crouch = new CrouchState(this);
-            _stunned = new StunnedState(this);
-            
-            CurrentHealth = MaxHealth();
 
             attacks = new List<Attack>();
-            
+            attacks.Add(new BaseKick(this));
+
+            attackResolver = new AttackResolver(this);
+
+            InputReader = GetComponent<InputReader>();
+            Rigidbody = GetComponent<Rigidbody>();
+
+            movement = new MovementState(this);
+            aerial = new AerialState(this);
+            crouch = new CrouchState(this);
+            _stunned = new StunnedState(this);
+
+            CurrentHealth = MaxHealth();
+
             PlayerRegistry.AddPlayer(GetComponent<Collider>(), this);
             FindOtherPlayer();
+
+            attackResolver.Initialise();
         }
+
 
         private void Start() {
             Fms.ChangeState(movement);
@@ -115,7 +121,7 @@ namespace Player.Base.Controller {
         public bool IsAerial() => Fms.CurrentState == aerial;
         public bool IsCrouching() => Fms.CurrentState == crouch;
         
-        public void SpawnHitbox(Vector3 position, Vector3 size, IAttack attack) {
+        public void SpawnHitbox(Vector3 position, Vector3 size, Attack attack) {
             Damager damager = Instantiate(hitbox, position, Quaternion.identity);
             damager.gameObject.transform.localScale = size;
             damager.Initialise(this, attack);
