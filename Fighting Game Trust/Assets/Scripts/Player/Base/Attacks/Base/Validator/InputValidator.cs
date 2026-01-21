@@ -50,6 +50,7 @@ namespace Player.Base.Attacks.Base.Validator {
         
         public void TryValidateDirection(int direction) {
             for (int i = 0; i < directions.Count; i++) {
+                if (directions[i].direction == 10) directions[i].performed = true;
                 if (!directions[i].performed && directions[i].direction == direction) {
                     directions[i].performed = true;
                     return;

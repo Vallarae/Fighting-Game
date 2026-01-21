@@ -2,6 +2,7 @@
 using Player.Base.Attacks.Base;
 using Player.Base.Attacks.Damage;
 using Player.Base.Attacks.DefaultAttacks;
+using Player.Base.Attacks.DefaultAttacks.TestAttacks;
 using Player.Base.HitboxLookup;
 using Player.Base.InputHandling;
 using Player.Base.Interfaces;
@@ -50,6 +51,8 @@ namespace Player.Base.Controller {
 
             attacks = new List<Attack>();
             attacks.Add(new BaseKick(this));
+            attacks.Add(new AdvancedAttackTest(this));
+            attacks.Add(new ConflictingAttackTest(this));
 
             attackResolver = new AttackResolver(this);
 

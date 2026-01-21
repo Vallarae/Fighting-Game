@@ -15,6 +15,8 @@ namespace Player.Base.InputHandling {
         private bool _heavyButtonDown;
         private bool _kickButtonDown;
         private bool _dashButtonDown;
+
+        private bool _pauseInputReading;
         
         private readonly List<Input> _recentInputs = new List<Input>();
 
@@ -27,6 +29,14 @@ namespace Player.Base.InputHandling {
                 _recentInputs.Add(CreateInput());
                 return;
             }
+            
+            for (int i = 0; i < _recentInputs.Count; i++) {
+                Input input = _recentInputs[i];
+                input.lifeTime++;
+                _recentInputs[i] = input;
+            }
+
+            if (_pauseInputReading) return;
 
             Input newInput = CreateInput();
             Input lastInput = _recentInputs[^1];
@@ -74,8 +84,18 @@ namespace Player.Base.InputHandling {
         
         #region Setters
 
-        public void ClearInputList() {
+        public void ClearAllButLastInputs() {
+            Input lastInput = _recentInputs[^1];
             _recentInputs.Clear();
+            _recentInputs.Add(lastInput);
+        }
+
+        public void Pause() {
+            _pauseInputReading = true;
+        }
+
+        public void Resume() {
+            _pauseInputReading = false;
         }
         
         #endregion
@@ -119,6 +139,7 @@ namespace Player.Base.InputHandling {
     public struct Input {
         public int direction;
         public int frames;
+        public int lifeTime;
         
         public bool punchButtonDown;
         public bool slashButtonDown;

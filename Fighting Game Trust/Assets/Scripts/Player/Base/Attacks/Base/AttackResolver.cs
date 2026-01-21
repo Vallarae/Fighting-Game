@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Player.Base.Attacks.Base.Validator;
 using Player.Base.Attacks.Base.Validator.Base;
 using Player.Base.Controller;
+using Player.Base.InputHandling;
 using Player.Base.Utils;
 using UnityEngine;
 using Input = Player.Base.InputHandling.Input;
@@ -19,6 +21,9 @@ using Input = Player.Base.InputHandling.Input;
  *
  * Previous comment was regarding an old system, testing new one now :D
  * - V (20/01/26)
+ *
+ * The new system works really well :D
+ * - V (21/01/26)
  */
 
 namespace Player.Base.Attacks.Base {
@@ -33,6 +38,9 @@ namespace Player.Base.Attacks.Base {
 
         public Dictionary<Attack, InputValidator> attackInputs;
         public List<Attack> attacks;
+
+        private bool _canAttack = true;
+        private Input _inputUsedOnAttack;
 
         public AttackResolver(PlayerController player) {
             _player = player;
@@ -62,6 +70,12 @@ namespace Player.Base.Attacks.Base {
         public void Tick() {
             IReadOnlyList<Input> recentInputs = _player.InputReader.GetRecentInputs();
             if (recentInputs.Count == 0) return;
+            
+            if (recentInputs.Count < 3) {
+                return;
+            }
+
+            _canAttack = true;
 
             foreach (Attack attack in attacks) {
                 InputValidator validator = attackInputs[attack];
@@ -73,10 +87,12 @@ namespace Player.Base.Attacks.Base {
                 }
 
                 // Process buffered inputs
-                int start = System.Math.Max(0, recentInputs.Count - InputBufferFrames);
+                int start = Math.Max(0, recentInputs.Count - InputBufferFrames);
 
                 for (int i = start; i < recentInputs.Count; i++) {
                     Input input = recentInputs[i];
+
+                    if (input.lifeTime > MaxInputFrames) continue;
 
                     validator.TryValidateDirection(input.direction);
                     validator.TryValidateButton(input);
@@ -88,6 +104,8 @@ namespace Player.Base.Attacks.Base {
 
         public Attack Resolve() {
             ValidAttack bestAttack = null;
+
+            if (!_canAttack) return null;
 
             foreach (Attack attack in attacks) {
                 InputValidator validator = attackInputs[attack];
@@ -106,7 +124,10 @@ namespace Player.Base.Attacks.Base {
             }
 
             if (bestAttack != null) {
-                attackInputs[bestAttack.attack].Reset(); // QoL: consume input
+                attackInputs[bestAttack.attack].Invalidate();
+                _player.InputReader.ClearAllButLastInputs();
+                _player.InputReader.Pause();
+                _canAttack = false;
                 return bestAttack.attack;
             }
 
@@ -126,7 +147,12 @@ namespace Player.Base.Attacks.Base {
                 _ => false
             };
         }
+
+        private int InputDirectionValidator(int direction) {
+            return 5;
+        }
         
+        [Obsolete("This function is Obsolete, use InputDirectionValidator instead")]
         private Input InputDirectionValidation(Input old) {
             if (old.direction == 10) return old;
             if (_player.DirectionToOtherPlayer() == -1) return old;

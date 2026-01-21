@@ -29,11 +29,13 @@ namespace Player.Base.PlayerStates {
 
             if (_frame >= _attack.FramesToEnd) {
                 _attack.Exit();
-                _player.InputReader.ClearInputList();
                 _player.Fms.ChangeState(IsGrounded ? _player.movement : _player.aerial);
             }
         }
-        public void Exit() { }
+
+        public void Exit() {
+            _player.InputReader.Resume();
+        }
         
         private bool IsGrounded => Physics.Raycast(_player.gameObject.transform.position, Vector3.down, 1.2f, LayerMask.GetMask("Ground"));
     }
