@@ -167,7 +167,6 @@ MonoBehaviour:
   dashCooldown: 0
   damage: 5
   hitbox: {fileID: -5662535672342132370, guid: 3e738e8c731028142bb3a6891ea71cbd, type: 3}
-  test: []
 --- !u!114 &29737792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1512,11 +1511,11 @@ GameObject:
   - component: {fileID: 776999938}
   - component: {fileID: 776999937}
   - component: {fileID: 776999936}
+  - component: {fileID: 776999941}
   - component: {fileID: 776999935}
   - component: {fileID: 776999934}
-  - component: {fileID: 776999933}
   - component: {fileID: 776999932}
-  - component: {fileID: 776999941}
+  - component: {fileID: 776999933}
   m_Layer: 0
   m_Name: TestPlayer
   m_TagString: Player
@@ -1577,7 +1576,6 @@ MonoBehaviour:
   dashCooldown: 0
   damage: 5
   hitbox: {fileID: -5662535672342132370, guid: 3e738e8c731028142bb3a6891ea71cbd, type: 3}
-  test: []
 --- !u!114 &776999934
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net;
 using Player.Base.Controller;
 using Player.Base.Utils;
 using TMPro;

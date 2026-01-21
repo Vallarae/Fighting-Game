@@ -1,12 +1,8 @@
 ﻿using System.Collections.Generic;
 using Player.Base.Attacks.Base.Validator.Base;
 
-/*
- * Get fucked lmao
- */
 namespace Player.Base.Attacks.Base {
-    [System.Serializable]
-    public abstract class Attack {
+    public class Attack {
         
         public Attack() {
             directionInputs = new List<int>();
@@ -17,6 +13,7 @@ namespace Player.Base.Attacks.Base {
         public int HitboxLifetime = 15;
 
         public bool LowBlockable = false;
+        public bool dealsKnockback = true;
 
         public AttackStance RequiredStance = AttackStance.Any;
 

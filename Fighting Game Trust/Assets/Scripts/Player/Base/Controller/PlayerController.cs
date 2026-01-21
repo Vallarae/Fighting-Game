@@ -8,7 +8,9 @@ using Player.Base.InputHandling;
 using Player.Base.Interfaces;
 using Player.Base.PlayerStates;
 using Player.Base.StateMachineSystem;
+using Player.Base.Utils;
 using UnityEngine;
+using Input = Player.Base.InputHandling.Input;
 
 namespace Player.Base.Controller {
     [RequireComponent(typeof(Rigidbody))]
@@ -32,15 +34,15 @@ namespace Player.Base.Controller {
         public int damage;
 
         public Damager hitbox;
-
-        public List<MonoBehaviour> test;
+        
         public List<Attack> attacks;
         public AttackResolver attackResolver;
         
         public MovementState movement;
         public AerialState aerial;
         public CrouchState crouch;
-        private StunnedState _stunned;
+        public StunnedState stunned;
+        public BlockingState blocking;
 
         private GameObject OtherPlayer { get; set; }
         
@@ -50,10 +52,9 @@ namespace Player.Base.Controller {
             Fms = new StateMachine();
 
             attacks = new List<Attack>();
-            attacks.Add(new BaseKick(this));
-            attacks.Add(new AdvancedAttackTest(this));
-            attacks.Add(new ConflictingAttackTest(this));
-
+            
+            InitializeAttacks();
+            
             attackResolver = new AttackResolver(this);
 
             InputReader = GetComponent<InputReader>();
@@ -62,8 +63,9 @@ namespace Player.Base.Controller {
             movement = new MovementState(this);
             aerial = new AerialState(this);
             crouch = new CrouchState(this);
-            _stunned = new StunnedState(this);
-
+            stunned = new StunnedState(this);
+            blocking = new BlockingState(this);
+            
             CurrentHealth = MaxHealth();
 
             PlayerRegistry.AddPlayer(GetComponent<Collider>(), this);
@@ -72,6 +74,11 @@ namespace Player.Base.Controller {
             attackResolver.Initialise();
         }
 
+        public void InitializeAttacks() {
+            attacks.Add(new BaseKick(this));
+            attacks.Add(new ConflictingAttackTest(this));
+            attacks.Add(new AdvancedAttackTest(this));
+        }
 
         private void Start() {
             Fms.ChangeState(movement);
@@ -108,11 +115,31 @@ namespace Player.Base.Controller {
             return Mathf.RoundToInt(directionVector.x);
         }
         
-        public void Damage(int amount) {
+        public void Damage(int amount, Attack attack) {
+            if (CanBlock(attack)) {
+                Fms.ChangeState(blocking);
+                Debug.Log("Blocking");
+                return;
+            }
             health -= amount;
-            if (Fms.CurrentState != _stunned) Fms.ChangeState(_stunned);
-            else _stunned.ExtraHit();
+            if (Fms.CurrentState != stunned) Fms.ChangeState(stunned);
+            else stunned.ExtraHit();
             TakeKnockback(5f);
+        }
+
+        public bool CanBlock(Attack attack) {
+            Input input = InputReader.GetLastInput(); 
+            Vector2Int playerDirection = DirectionUtils.NumpadToVector(input.direction);
+            int otherDirection = DirectionToOtherPlayer();
+            
+            Debug.Log($"Player Direction:  {playerDirection.x}, AttackDirection: {otherDirection}, Low Blocking: {attack.LowBlockable}, Crouched: {IsCrouching()}");
+            
+            if (otherDirection == playerDirection.x) {
+                if (attack.LowBlockable && IsCrouching()) return true;
+                if (!attack.LowBlockable && !IsCrouching()) return true;
+            }
+
+            return false;
         }
 
         public int MaxHealth() {

@@ -33,7 +33,7 @@ namespace Player.Base.Attacks.Damage {
             if (ReferenceEquals(player, null)) return;
             if (ReferenceEquals(player, _player)) return;
             
-            damageable.Damage(_player.damage);
+            damageable.Damage(_player.damage, _attack);
         }
     }
 }

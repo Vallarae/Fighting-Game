@@ -21,11 +21,10 @@ namespace Editor {
         
         private SerializedProperty _damageField;
         private SerializedProperty _hitboxField;
+        private SerializedProperty _attacksField;
 
         private SerializedProperty _recoveryFramesField;
         private SerializedProperty _recoveryFramesAfterComboField;
-
-        private SerializedProperty _testField;
 
         private Int32 _tab;
 
@@ -45,11 +44,10 @@ namespace Editor {
             
             _damageField = serializedObject.FindProperty(nameof(_player.damage));
             _hitboxField = serializedObject.FindProperty(nameof(_player.hitbox));
+            _attacksField = serializedObject.FindProperty(nameof(_player.attacks));
             
             _recoveryFramesField = serializedObject.FindProperty(nameof(_player.recoveryFrames));
             _recoveryFramesAfterComboField = serializedObject.FindProperty(nameof(_player.recoveryFramesAfterCombo));
-            
-            _testField =  serializedObject.FindProperty(nameof(_player.test));
         }
 
         public override void OnInspectorGUI() {
@@ -76,6 +74,7 @@ namespace Editor {
                 case 2:
                     EditorGUILayout.PropertyField(_damageField);
                     EditorGUILayout.PropertyField(_hitboxField);
+                    EditorGUILayout.PropertyField(_attacksField);
                     break;
                 case 3:
                     EditorGUILayout.PropertyField(_recoveryFramesField);
@@ -84,8 +83,6 @@ namespace Editor {
             }
             
             EditorGUILayout.Space(20);
-            
-            EditorGUILayout.PropertyField(_testField);
             
             GUI.enabled = true;
             serializedObject.ApplyModifiedProperties();
