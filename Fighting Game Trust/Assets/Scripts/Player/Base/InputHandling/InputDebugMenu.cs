@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using Player.Base.Controller;
 using Player.Base.Utils;
@@ -93,6 +94,24 @@ namespace Player.Base.InputHandling {
                 Vector3 pos = DirectionUtils.GetLinePosition(recentInputs[inputIndex].direction);
                 lineRenderer.SetPosition(i, pos);
             }
+
+            directionDebug.transform.position = lineRenderer.gameObject.transform.position +
+                                                GetPositionForDebug(_latestInput.direction);
+        }
+
+        private Vector3 GetPositionForDebug(int direction) {
+            return direction switch {
+                1 => new Vector3(-50, -50),
+                2 => new Vector3(0, -50),
+                3 => new Vector3(50, -50),
+                4 => new Vector3(-50, 0),
+                5 => new Vector3(0, 0),
+                6 => new Vector3(50, 0),
+                7 => new Vector3(-50, 50),
+                8 => new Vector3(0, 50),
+                9 => new Vector3(50, 50),
+                _ => new(0, 0)
+            };
         }
 
         //<Sprite=50>
