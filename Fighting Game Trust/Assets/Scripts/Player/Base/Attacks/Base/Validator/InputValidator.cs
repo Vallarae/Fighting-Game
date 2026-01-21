@@ -1,5 +1,6 @@
 ﻿using Player.Base.Attacks.Base.Validator.Base;
 using System.Collections.Generic;
+using Player.Base.Controller;
 using Player.Base.InputHandling;
 
 namespace Player.Base.Attacks.Base.Validator {
@@ -7,9 +8,11 @@ namespace Player.Base.Attacks.Base.Validator {
         public List<DirectionValidator> directions;
         public ButtonValidation button;
         public int frames;
+        private PlayerController _player;
         
-        public InputValidator() {
+        public InputValidator(PlayerController _player) {
             directions = new List<DirectionValidator>();
+            this._player = _player;
         }
         
         public void Validate(int direction) {
@@ -51,7 +54,7 @@ namespace Player.Base.Attacks.Base.Validator {
         public void TryValidateDirection(int direction) {
             for (int i = 0; i < directions.Count; i++) {
                 if (directions[i].direction == 10) directions[i].performed = true;
-                if (!directions[i].performed && directions[i].direction == direction) {
+                if (!directions[i].performed && InputDirectionValidator(directions[i].direction) == direction) {
                     directions[i].performed = true;
                     return;
                 }
@@ -78,6 +81,23 @@ namespace Player.Base.Attacks.Base.Validator {
                 directions[i].performed = false;
 
             button.performed = false;
+        }
+        
+        private int InputDirectionValidator(int old) {
+            if (old == 10) return old;
+            if (_player.DirectionToOtherPlayer() == -1) return old;
+
+            int value = old switch {
+                6 => 4,
+                4 => 6,
+                1 => 3,
+                3 => 1,
+                7 => 9,
+                9 => 7,
+                _ => old
+            };
+            
+            return value;
         }
     }
 }

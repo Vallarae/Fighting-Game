@@ -51,7 +51,7 @@ namespace Player.Base.Attacks.Base {
             attackInputs = new Dictionary<Attack, InputValidator>();
 
             foreach (Attack attack in attacks) {
-                var validator = new InputValidator();
+                var validator = new InputValidator(_player);
 
                 foreach (int dir in attack.directionInputs) {
                     validator.directions.Add(new DirectionValidator {
@@ -124,7 +124,12 @@ namespace Player.Base.Attacks.Base {
             }
 
             if (bestAttack != null) {
-                attackInputs[bestAttack.attack].Invalidate();
+
+                foreach (Attack attack in attacks) {
+                    InputValidator validator = attackInputs[attack];
+                    validator.Invalidate();
+                }
+                
                 _player.InputReader.ClearAllButLastInputs();
                 _player.InputReader.Pause();
                 _canAttack = false;
@@ -146,10 +151,6 @@ namespace Player.Base.Attacks.Base {
                 AttackStance.Aerial => _player.IsAerial(),
                 _ => false
             };
-        }
-
-        private int InputDirectionValidator(int direction) {
-            return 5;
         }
         
         [Obsolete("This function is Obsolete, use InputDirectionValidator instead")]
