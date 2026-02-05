@@ -67,7 +67,7 @@ namespace Player.Base.Attacks.Base {
             }
         }
 
-        public void Tick() {
+        public void Tick(bool validateButtons = true) {
             IReadOnlyList<Input> recentInputs = _player.InputReader.GetRecentInputs();
             if (recentInputs.Count == 0) return;
             
@@ -95,7 +95,7 @@ namespace Player.Base.Attacks.Base {
                     if (input.lifeTime > MaxInputFrames) continue;
 
                     validator.TryValidateDirection(input.direction);
-                    validator.TryValidateButton(input);
+                    if (validateButtons) validator.TryValidateButton(input);
                 }
 
                 validator.frames++;

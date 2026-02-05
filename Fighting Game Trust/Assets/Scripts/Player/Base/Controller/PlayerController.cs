@@ -86,7 +86,7 @@ namespace Player.Base.Controller {
 
         private void FixedUpdate() {
             Fms.Tick();
-            attackResolver.Tick();
+            attackResolver.Tick(!(Fms.CurrentState is AttackStance));
         }
 
         private void OnDrawGizmos() {
