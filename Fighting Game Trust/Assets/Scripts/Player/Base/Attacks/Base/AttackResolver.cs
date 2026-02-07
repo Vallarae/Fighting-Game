@@ -85,16 +85,19 @@ namespace Player.Base.Attacks.Base {
                     validator.Reset();
                     continue;
                 }
-
-                // Process buffered inputs
+                
+                Input input = recentInputs[^1];
+                if (input.lifeTime < MaxInputFrames) {
+                    validator.TryValidateDirection(input.direction);
+                }
+                
                 int start = Math.Max(0, recentInputs.Count - InputBufferFrames);
-
+                
                 for (int i = start; i < recentInputs.Count; i++) {
-                    Input input = recentInputs[i];
+                    input = recentInputs[i];
 
                     if (input.lifeTime > MaxInputFrames) continue;
 
-                    validator.TryValidateDirection(input.direction);
                     if (validateButtons) validator.TryValidateButton(input);
                 }
 

@@ -54,7 +54,9 @@ namespace Player.Base.Attacks.Base.Validator {
         public void TryValidateDirection(int direction) {
             for (int i = 0; i < directions.Count; i++) {
                 if (directions[i].direction == 10) directions[i].performed = true;
+                if (directions[i].performed) continue;
                 if (!directions[i].performed && InputDirectionValidator(directions[i].direction) == direction) {
+                    if (!IsPreviousInputValid(i)) return;
                     directions[i].performed = true;
                     return;
                 }
@@ -82,6 +84,14 @@ namespace Player.Base.Attacks.Base.Validator {
 
             button.performed = false;
         }
+
+        private bool IsPreviousInputValid(int index) {
+            if (index == 0)
+                return true;
+            
+            return directions[index - 1].performed;
+        }
+
         
         private int InputDirectionValidator(int old) {
             if (old == 10) return old;
