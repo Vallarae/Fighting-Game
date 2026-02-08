@@ -84,12 +84,12 @@ namespace Player.Base.InputHandling {
         
         #region Setters
 
-        public void ClearAllButLastInputs() {
+        public void ClearAllButLastInputs(bool flagAsAttackInput = false) {
             Input lastInput = _recentInputs[^1];
+            lastInput.isAttackInput = flagAsAttackInput;
             _recentInputs.Clear();
             _recentInputs.Add(lastInput);
         }
-
         public void Pause() {
             _pauseInputReading = true;
         }
@@ -147,5 +147,7 @@ namespace Player.Base.InputHandling {
         public bool kickButtonDown;
 
         public bool dashButtonDown;
+
+        public bool isAttackInput;
     }
 }

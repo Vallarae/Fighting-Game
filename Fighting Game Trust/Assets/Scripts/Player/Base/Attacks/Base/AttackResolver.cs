@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using Player.Base.Attacks.Base.Validator;
 using Player.Base.Attacks.Base.Validator.Base;
 using Player.Base.Controller;
-using Player.Base.InputHandling;
-using Player.Base.Utils;
 using UnityEngine;
 using Input = Player.Base.InputHandling.Input;
 
@@ -39,7 +37,7 @@ namespace Player.Base.Attacks.Base {
         public Dictionary<Attack, InputValidator> attackInputs;
         public List<Attack> attacks;
 
-        private bool _canAttack = true;
+        public bool canAttack = true;
         private Input _inputUsedOnAttack;
 
         public AttackResolver(PlayerController player) {
@@ -68,6 +66,7 @@ namespace Player.Base.Attacks.Base {
         }
 
         public void Tick(bool validateButtons = true) {
+            if (!canAttack) return;
             IReadOnlyList<Input> recentInputs = _player.InputReader.GetRecentInputs();
             if (recentInputs.Count == 0) return;
             
@@ -75,7 +74,7 @@ namespace Player.Base.Attacks.Base {
                 return;
             }
 
-            _canAttack = true;
+            canAttack = true;
 
             foreach (Attack attack in attacks) {
                 InputValidator validator = attackInputs[attack];
@@ -96,6 +95,7 @@ namespace Player.Base.Attacks.Base {
                 for (int i = start; i < recentInputs.Count; i++) {
                     input = recentInputs[i];
 
+                    if (input.isAttackInput) continue;
                     if (input.lifeTime > MaxInputFrames) continue;
 
                     if (validateButtons) validator.TryValidateButton(input);
@@ -108,7 +108,7 @@ namespace Player.Base.Attacks.Base {
         public Attack Resolve() {
             ValidAttack bestAttack = null;
 
-            if (!_canAttack) return null;
+            if (!canAttack) return null;
 
             foreach (Attack attack in attacks) {
                 InputValidator validator = attackInputs[attack];
@@ -127,15 +127,14 @@ namespace Player.Base.Attacks.Base {
             }
 
             if (bestAttack != null) {
-
                 foreach (Attack attack in attacks) {
                     InputValidator validator = attackInputs[attack];
                     validator.Invalidate();
                 }
                 
-                _player.InputReader.ClearAllButLastInputs();
+                _player.InputReader.ClearAllButLastInputs(true); //22:59 08/02 -> it's this right here, I can feel it //23:05 08/02 -> it was not ;-;
                 _player.InputReader.Pause();
-                _canAttack = false;
+                canAttack = false;
                 return bestAttack.attack;
             }
 
@@ -154,22 +153,6 @@ namespace Player.Base.Attacks.Base {
                 AttackStance.Aerial => _player.IsAerial(),
                 _ => false
             };
-        }
-        
-        [Obsolete("This function is Obsolete, use InputDirectionValidator instead")]
-        private Input InputDirectionValidation(Input old) {
-            if (old.direction == 10) return old;
-            if (_player.DirectionToOtherPlayer() == -1) return old;
-            
-            Vector2Int dir = DirectionUtils.NumpadToVector(old.direction);
-            dir.x *= -1;
-            int direction = DirectionUtils.GetDirection(dir);
-
-            Input newInput = old;
-            newInput.direction = direction;
-            newInput.direction = DirectionUtils.GetDirection(dir);
-
-            return newInput;
         }
     }
 }

@@ -35,6 +35,7 @@ namespace Player.Base.PlayerStates {
 
         public void Exit() {
             _player.InputReader.Resume();
+            _player.attackResolver.canAttack = true;
         }
         
         private bool IsGrounded => Physics.Raycast(_player.gameObject.transform.position, Vector3.down, 1.2f, LayerMask.GetMask("Ground"));
