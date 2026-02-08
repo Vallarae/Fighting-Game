@@ -14,9 +14,7 @@ namespace Player.Base.PlayerStates {
         }
 
         public void Enter() {
-            GameObject playerObject = _player.gameObject;
-            playerObject.transform.localScale = new Vector3(1, 0.5f, 1);
-            playerObject.transform.position = new Vector3(_player.transform.position.x, _player.transform.position.y - 0.5f, _player.transform.position.z);
+            _player.PlayerAnimationController.UpdateValue("Crouched", true);
             _player.Rigidbody.linearVelocity = Vector2.zero;
         }
 
@@ -34,9 +32,7 @@ namespace Player.Base.PlayerStates {
         }
 
         public void Exit() {
-            GameObject playerObject = _player.gameObject;
-            playerObject.transform.localScale = new Vector3(1, 1f, 1);
-            playerObject.transform.position = new Vector3(_player.transform.position.x, _player.transform.position.y + 0.5f, _player.transform.position.z);
+            _player.PlayerAnimationController.UpdateValue("Crouched", false);
         }
     }
 }

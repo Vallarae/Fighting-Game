@@ -8,6 +8,9 @@ namespace Scene {
         public float maxDistance = 10f;
 
         [Space] 
+        public Vector3 offset;
+
+        [Space] 
         
         public float positionSmooth = 5f;
         public float zoomSmooth = 5f;
@@ -38,6 +41,8 @@ namespace Scene {
                 transform.position.y,
                 transform.position.z
             );
+
+            targetPosition += offset;
             
             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * positionSmooth);
             

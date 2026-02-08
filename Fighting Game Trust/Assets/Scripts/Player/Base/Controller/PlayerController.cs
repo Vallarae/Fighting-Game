@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Player.Base.Animations;
 using Player.Base.Attacks.Base;
 using Player.Base.Attacks.Damage;
 using Player.Base.Attacks.DefaultAttacks;
@@ -13,12 +14,14 @@ using UnityEngine;
 using Input = Player.Base.InputHandling.Input;
 
 namespace Player.Base.Controller {
-    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(PlayerAnimationController))]
     [RequireComponent(typeof(InputReader))]
+    [RequireComponent(typeof(Rigidbody))]
     public class PlayerController : MonoBehaviour, IDamageable, IHealth {
         public StateMachine Fms { get; private set; }
         public InputReader InputReader { get; private set; }
         public Rigidbody Rigidbody { get; private set; }
+        public PlayerAnimationController PlayerAnimationController { get; private set; }
 
         public float walkSpeed;
         public float runSpeed;
@@ -59,6 +62,7 @@ namespace Player.Base.Controller {
 
             InputReader = GetComponent<InputReader>();
             Rigidbody = GetComponent<Rigidbody>();
+            PlayerAnimationController = GetComponent<PlayerAnimationController>();
 
             movement = new MovementState(this);
             aerial = new AerialState(this);
@@ -86,7 +90,8 @@ namespace Player.Base.Controller {
 
         private void FixedUpdate() {
             Fms.Tick();
-            attackResolver.Tick(!(Fms.CurrentState is AttackStance));
+            attackResolver.Tick();
+            PlayerAnimationController.Tick();
         }
 
         private void OnDrawGizmos() {

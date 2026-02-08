@@ -36,12 +36,16 @@ namespace Player.Base.PlayerStates {
             _dashCooldown--;
             
             HandleMovement();
+            
+            
         }
         public void Exit() { }
 
         private void HandleMovement() {
             Input input = _player.InputReader.GetLastInput(); //gets the most recent input from the player
             Vector2Int dir = DirectionUtils.NumpadToVector(input.direction);
+            
+            Animation(dir);
 
             if (dir.y > 0) {
                 _player.Fms.ChangeState(_player.aerial);
@@ -97,6 +101,12 @@ namespace Player.Base.PlayerStates {
             _player.Rigidbody.AddForce(direction * dashForceToUse, ForceMode.Impulse);
             _dashCooldown = _player.dashCooldown;
             _canDash = false;
+        }
+
+        private void Animation(Vector2Int dir) {
+            bool isTowards = dir.x != _player.DirectionToOtherPlayer();
+            
+            _player.PlayerAnimationController.UpdateValue("WalkDirection", isTowards ? 1.1f : -1.1f);
         }
     }
 }
