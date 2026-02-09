@@ -1,6 +1,7 @@
 using System;
 using Player.Base.Controller;
 using UnityEditor;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 namespace Editor {
@@ -13,6 +14,7 @@ namespace Editor {
         private SerializedProperty _accelerationField;
         private SerializedProperty _decelerationField;
         private SerializedProperty _dashTowardsField;
+        private SerializedProperty _maxAirDashFramesField;
         private SerializedProperty _dashAwayField;
         private SerializedProperty _jumpForceField;
         private SerializedProperty _dashCooldownField;
@@ -36,6 +38,7 @@ namespace Editor {
             _accelerationField = serializedObject.FindProperty(nameof(_player.acceleration));
             _decelerationField = serializedObject.FindProperty(nameof(_player.deceleration));
             _dashTowardsField = serializedObject.FindProperty(nameof(_player.dashTowards));
+            _maxAirDashFramesField = serializedObject.FindProperty(nameof(_player.maxAirDashFrames));
             _dashAwayField = serializedObject.FindProperty(nameof(_player.dashAway));
             _jumpForceField = serializedObject.FindProperty(nameof(_player.jumpForce));
             _dashCooldownField = serializedObject.FindProperty(nameof(_player.dashCooldown));
@@ -64,6 +67,7 @@ namespace Editor {
                     EditorGUILayout.PropertyField(_accelerationField);
                     EditorGUILayout.PropertyField(_decelerationField);
                     EditorGUILayout.PropertyField(_dashTowardsField);
+                    EditorGUILayout.PropertyField(_maxAirDashFramesField);
                     EditorGUILayout.PropertyField(_dashAwayField);
                     EditorGUILayout.PropertyField(_jumpForceField);
                     EditorGUILayout.PropertyField(_dashCooldownField);

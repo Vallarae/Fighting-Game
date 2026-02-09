@@ -36,7 +36,7 @@ namespace Player.Base.Attacks.DefaultAttacks {
 
             if (kick == 2) {
                 FramesToImpact = 8;
-                FramesToEnd = 15;
+                FramesToEnd = 24;
                 LowBlockable = true;
             }
             else {
@@ -45,7 +45,7 @@ namespace Player.Base.Attacks.DefaultAttacks {
 
             if (kick == 5) {
                 FramesToImpact = 6;
-                FramesToEnd = 15;
+                FramesToEnd = 24;
             }
             
             _player.PlayerAnimationController.UpdateValue("Kick", kick);

@@ -18,6 +18,11 @@ namespace Player.Base.PlayerStates {
         private bool _hasDoubleJump;
         private bool _canDoubleJump;
         private bool _canDash;
+        private int _dashDuration;
+
+        private float _dashForceToUse;
+        private Vector2 _direction;
+        private bool _isTowards;
 
         public void Enter() {
             _frame = 0;
@@ -30,12 +35,15 @@ namespace Player.Base.PlayerStates {
             
             Vector2 direction = dir;
             direction.x /= 2.5f;
-            
-            _player.Rigidbody.AddForce(direction * _player.jumpForce, ForceMode.Impulse);
-            _player.Rigidbody.linearVelocity = new Vector2(0, _player.Rigidbody.linearVelocity.y);
 
-            _canDash = true;
-            _dashCooldown = _player.dashCooldown;
+            if (IsGrounded) {
+                _player.Rigidbody.AddForce(direction * _player.jumpForce, ForceMode.Impulse);
+                _player.Rigidbody.linearVelocity = new Vector2(0, _player.Rigidbody.linearVelocity.y);
+                
+                _canDash = true;
+                _dashCooldown = _player.dashCooldown;
+                _dashDuration = 0;
+            }
         }
 
         public void Tick() {
@@ -47,8 +55,12 @@ namespace Player.Base.PlayerStates {
             
             HandleAerial();
         }
-        
-        public void Exit() { }
+
+        public void Exit() {
+            if (_canDash) return;
+            
+            _player.Rigidbody.linearVelocity = Vector2.zero;
+        }
 
         private void HandleAerial() {
             _frame++;
@@ -60,12 +72,31 @@ namespace Player.Base.PlayerStates {
             Input input = _player.InputReader.GetLastInput(); //gets the most recent input from the player
             Vector2Int dir = DirectionUtils.NumpadToVector(input.direction);
 
-            if (isGrounded) {
+            if (IsGrounded) {
                 _player.Fms.ChangeState(_player.movement);
                 return;
             }
 
+            if (OnTopOfPlayer()) {
+                int direction =  _player.DirectionToOtherPlayer();
+                
+                _player.Rigidbody.AddForce(new Vector2(direction, 0) * 0.5f, ForceMode.Acceleration);
+            }
+
             if (dir.y < 1) _canDoubleJump = true;
+
+            if (!_canDash) _dashDuration++;
+
+            if (_isTowards && _dashDuration == 5) {
+                DashVelocity();
+            } else if (!_isTowards && _dashDuration == 1) {
+                DashVelocity();
+            }
+
+            if (!_canDash && _dashDuration > _player.maxAirDashFrames) {
+                _player.Rigidbody.linearVelocity = new Vector2(0, _player.Rigidbody.linearVelocity.y);
+                _player.Rigidbody.useGravity = true;
+            }
             
             if (_dashCooldown <= 0) DoDash(input, dir);
 
@@ -86,18 +117,33 @@ namespace Player.Base.PlayerStates {
             if (!input.dashButtonDown) return;
             if (!_canDash) return;
 
-            bool isTowards = dir.x != _player.DirectionToOtherPlayer();
-            float dashForceToUse = isTowards ? _player.dashTowards : _player.dashAway;
+            _isTowards = dir.x != _player.DirectionToOtherPlayer();
+            _dashForceToUse = _isTowards ? _player.dashTowards : _player.dashAway;
 
-            Vector2 direction = dir;
-            direction.y = 0;
+            _direction = dir;
+            _direction.y = 0;
             
-            _player.Rigidbody.AddForce(direction * dashForceToUse, ForceMode.Impulse);
             _dashCooldown = _player.dashCooldown;
             _canDash = false;
             _hasDoubleJump = true;
+            _dashDuration = 0;
+            _player.Rigidbody.useGravity = false;
+            _player.Rigidbody.linearVelocity = Vector2.zero;
         }
 
-        private bool isGrounded => Physics.Raycast(_player.gameObject.transform.position, Vector3.down, 1.2f, LayerMask.GetMask("Ground"));
+        private void DashVelocity() {
+            _player.Rigidbody.AddForce(_direction * _dashForceToUse, ForceMode.Impulse);
+        }
+
+        private bool IsGrounded => Physics.Raycast(_player.gameObject.transform.position, Vector3.down, 1.2f, LayerMask.GetMask("Ground"));
+        
+        private bool OnTopOfPlayer() {
+            
+            bool one = Physics.Raycast(_player.gameObject.transform.position, Vector3.down, 1.2f, LayerMask.GetMask("Player"));
+            bool two = Physics.Raycast(_player.gameObject.transform.position + new Vector3(0.5f, 0, 0), Vector3.down, 1.2f, LayerMask.GetMask("Player"));
+            bool three = Physics.Raycast(_player.gameObject.transform.position - new Vector3(0.5f, 0, 0), Vector3.down, 1.2f, LayerMask.GetMask("Player"));
+
+            return one || two || three;
+        }
     }
 }

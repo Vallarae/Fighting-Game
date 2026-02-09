@@ -26,6 +26,7 @@ namespace Player.Base.Controller {
         public float walkSpeed;
         public float runSpeed;
         public float dashTowards;
+        public int maxAirDashFrames;
         public float dashAway;
         public float acceleration;
         public float deceleration;

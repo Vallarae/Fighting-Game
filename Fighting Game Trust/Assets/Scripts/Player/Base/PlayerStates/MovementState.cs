@@ -17,6 +17,9 @@ namespace Player.Base.PlayerStates {
 
         private int _lastHorizontalDir;
 
+        private bool _canMove;
+        private int _moveCooldown;
+
         public MovementState(PlayerController player) {
             _player = player;
         }
@@ -34,10 +37,11 @@ namespace Player.Base.PlayerStates {
             }
 
             _dashCooldown--;
+            _moveCooldown++;
+
+            if (_moveCooldown > 15) _canMove = true;
             
-            HandleMovement();
-            
-            
+            if (_canMove) HandleMovement();
         }
         public void Exit() { }
 
@@ -91,16 +95,18 @@ namespace Player.Base.PlayerStates {
             //wait I have an idea...
             //nvm it never broke, I'm just stupid ;-;
             bool isTowards = dir.x != _player.DirectionToOtherPlayer();
-            float dashForceToUse = isTowards ? _player.dashTowards : _player.dashAway;
-
+            
             if (isTowards) _speedToUse = _player.runSpeed;
 
             Vector2 direction = dir;
             direction.y = 0;
             
-            _player.Rigidbody.AddForce(direction * dashForceToUse, ForceMode.Impulse);
+            if (!isTowards) _player.Rigidbody.AddForce(direction * _player.dashAway, ForceMode.Impulse);
+            else _player.Rigidbody.AddForce(direction * (_player.runSpeed * 0.8f), ForceMode.Impulse);
             _dashCooldown = _player.dashCooldown;
             _canDash = false;
+            _canMove = false;
+            _moveCooldown = 0;
         }
 
         private void Animation(Vector2Int dir) {
