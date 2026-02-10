@@ -14,11 +14,13 @@ namespace Player.Base.InputHandling {
         private bool _slashButtonDown;
         private bool _heavyButtonDown;
         private bool _kickButtonDown;
+        private bool _duskButtonDown;
+        private bool _romanCancelButtonDown;
         private bool _dashButtonDown;
 
         private bool _pauseInputReading;
-        
-        private readonly List<Input> _recentInputs = new List<Input>();
+
+        private readonly List<Input> _recentInputs;
 
         #endregion
         
@@ -72,6 +74,14 @@ namespace Player.Base.InputHandling {
             _heavyButtonDown = cc.performed;
         }
 
+        public void OnDusk(InputAction.CallbackContext cc) {
+            _duskButtonDown = cc.performed;
+        }
+
+        public void OnRomanCancel(InputAction.CallbackContext cc) {
+            _romanCancelButtonDown = cc.performed;
+        }
+
         public void OnKick(InputAction.CallbackContext cc) {
             _kickButtonDown = cc.performed;
         }
@@ -109,7 +119,9 @@ namespace Player.Base.InputHandling {
                 slashButtonDown = _slashButtonDown,
                 heavyButtonDown = _heavyButtonDown,
                 kickButtonDown = _kickButtonDown,
-                dashButtonDown = _dashButtonDown
+                dashButtonDown = _dashButtonDown,
+                romanCancelButtonDown = _romanCancelButtonDown,
+                duskButtonDown =  _duskButtonDown
             };
         }
 
@@ -130,7 +142,9 @@ namespace Player.Base.InputHandling {
                    && a.slashButtonDown == b.slashButtonDown
                    && a.heavyButtonDown == b.heavyButtonDown
                    && a.kickButtonDown == b.kickButtonDown
-                   && a.dashButtonDown == b.dashButtonDown;
+                   && a.dashButtonDown == b.dashButtonDown
+                   && a.duskButtonDown == b.duskButtonDown
+                   && a.romanCancelButtonDown == b.romanCancelButtonDown;
         }
         
         #endregion
@@ -145,6 +159,9 @@ namespace Player.Base.InputHandling {
         public bool slashButtonDown;
         public bool heavyButtonDown;
         public bool kickButtonDown;
+
+        public bool duskButtonDown;
+        public bool romanCancelButtonDown;
 
         public bool dashButtonDown;
 

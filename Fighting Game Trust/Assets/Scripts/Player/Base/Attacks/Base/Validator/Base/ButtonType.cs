@@ -3,6 +3,7 @@
         Punch,
         Kick,
         Slash,
-        HeavySlash
+        HeavySlash,
+        Dusk
     }
 }
