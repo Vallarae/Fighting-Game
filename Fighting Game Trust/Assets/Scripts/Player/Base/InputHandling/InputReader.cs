@@ -20,7 +20,7 @@ namespace Player.Base.InputHandling {
 
         private bool _pauseInputReading;
 
-        private readonly List<Input> _recentInputs;
+        private readonly List<Input> _recentInputs = new List<Input>();
 
         #endregion
         

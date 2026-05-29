@@ -128,7 +128,12 @@ namespace Player.Base.Controller {
                 return;
             }
             health -= amount;
-            if (Fms.CurrentState != stunned) Fms.ChangeState(stunned);
+            
+            if (Fms.CurrentState != stunned) {
+                stunned.attackHitWith = attack;
+                Fms.ChangeState(stunned);
+            }
+            
             else stunned.ExtraHit();
             TakeKnockback(5f);
         }

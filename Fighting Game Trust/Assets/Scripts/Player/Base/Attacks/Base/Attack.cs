@@ -11,6 +11,7 @@ namespace Player.Base.Attacks.Base {
         public int FramesToImpact = 5;
         public int FramesToEnd = 5;
         public int HitboxLifetime = 15;
+        public int AllowFollowUpTimer = 5;
 
         public bool LowBlockable = false;
         public bool dealsKnockback = true;

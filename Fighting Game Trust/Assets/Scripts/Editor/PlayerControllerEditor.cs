@@ -23,7 +23,6 @@ namespace Editor {
         
         private SerializedProperty _damageField;
         private SerializedProperty _hitboxField;
-        private SerializedProperty _attacksField;
 
         private SerializedProperty _recoveryFramesField;
         private SerializedProperty _recoveryFramesAfterComboField;
@@ -47,7 +46,6 @@ namespace Editor {
             
             _damageField = serializedObject.FindProperty(nameof(_player.damage));
             _hitboxField = serializedObject.FindProperty(nameof(_player.hitbox));
-            _attacksField = serializedObject.FindProperty(nameof(_player.attacks));
             
             _recoveryFramesField = serializedObject.FindProperty(nameof(_player.recoveryFrames));
             _recoveryFramesAfterComboField = serializedObject.FindProperty(nameof(_player.recoveryFramesAfterCombo));
@@ -78,7 +76,6 @@ namespace Editor {
                 case 2:
                     EditorGUILayout.PropertyField(_damageField);
                     EditorGUILayout.PropertyField(_hitboxField);
-                    EditorGUILayout.PropertyField(_attacksField);
                     break;
                 case 3:
                     EditorGUILayout.PropertyField(_recoveryFramesField);

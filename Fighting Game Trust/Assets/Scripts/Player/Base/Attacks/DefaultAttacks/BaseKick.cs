@@ -15,6 +15,7 @@ namespace Player.Base.Attacks.DefaultAttacks {
             FramesToImpact = 5;
             FramesToEnd = 25;
             HitboxLifetime = 5;
+            AllowFollowUpTimer = 10;
 
             RequiredStance = AttackStance.Any;
             LowBlockable = true;
@@ -24,19 +25,20 @@ namespace Player.Base.Attacks.DefaultAttacks {
         }
 
         public override void Enter() {
-            int kick = 5;
+            float kick = 5f;
 
             Input input = _player.InputReader.GetLastInput();
             Vector2Int dir = DirectionUtils.NumpadToVector(input.direction);
 
-            if (dir.y < 0) kick = 2;
-            if (dir.y > 0) kick = 7;
+            if (dir.y < 0) kick = 2f;
+            if (dir.y > 0) kick = 7f;
 
             if (!Physics.Raycast(_player.transform.position, Vector3.down, 1.2f, LayerMask.GetMask("Ground"))) kick = 7;
 
             if (kick == 2) {
                 FramesToImpact = 8;
                 FramesToEnd = 24;
+                AllowFollowUpTimer = 10;
                 LowBlockable = true;
             }
             else {
@@ -46,13 +48,14 @@ namespace Player.Base.Attacks.DefaultAttacks {
             if (kick == 5) {
                 FramesToImpact = 6;
                 FramesToEnd = 24;
+                AllowFollowUpTimer = 10;
             }
             
             _player.PlayerAnimationController.UpdateValue("Kick", kick);
         }
 
         public override void Exit() {
-            _player.PlayerAnimationController.UpdateValue("Kick", 0);
+            _player.PlayerAnimationController.UpdateValue("Kick", 0f);
         }
 
         public override void OnAttack() {
