@@ -1,4 +1,4 @@
-﻿namespace Player.Base.Attacks.Base {
+﻿namespace Player.Base.Attacks.Base.Info {
     public enum AttackStance {
         Standing,
         Crouching,

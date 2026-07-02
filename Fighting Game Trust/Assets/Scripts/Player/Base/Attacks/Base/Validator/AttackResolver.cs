@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Player.Base.Attacks.Base.Info;
 using Player.Base.Attacks.Base.Validator;
 using Player.Base.Attacks.Base.Validator.Base;
 using Player.Base.Controller;
-using UnityEngine;
 using Input = Player.Base.InputHandling.Input;
 
 /*
@@ -22,6 +22,9 @@ using Input = Player.Base.InputHandling.Input;
  *
  * The new system works really well :D
  * - V (21/01/26)
+ *
+ * WHAT THE FUCK AM I READING ;-;
+ * - V (02/07/26)
  */
 
 namespace Player.Base.Attacks.Base {
@@ -146,7 +149,7 @@ namespace Player.Base.Attacks.Base {
         }
 
         private bool ContextValid(Attack attack) {
-            return attack.RequiredStance switch {
+            return attack.requiredStance switch {
                 AttackStance.Any => true,
                 AttackStance.Standing => !_player.IsAerial() && !_player.IsCrouching(),
                 AttackStance.Crouching => _player.IsCrouching(),

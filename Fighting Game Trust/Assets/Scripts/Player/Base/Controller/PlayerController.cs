@@ -2,8 +2,6 @@
 using Player.Base.Animations;
 using Player.Base.Attacks.Base;
 using Player.Base.Attacks.Damage;
-using Player.Base.Attacks.DefaultAttacks;
-using Player.Base.Attacks.DefaultAttacks.TestAttacks;
 using Player.Base.HitboxLookup;
 using Player.Base.InputHandling;
 using Player.Base.Interfaces;
@@ -68,7 +66,7 @@ namespace Player.Base.Controller {
             movement = new MovementState(this);
             aerial = new AerialState(this);
             crouch = new CrouchState(this);
-            stunned = new StunnedState(this);
+            stunned = new StunnedState();
             blocking = new BlockingState(this);
             
             CurrentHealth = MaxHealth();
@@ -80,9 +78,7 @@ namespace Player.Base.Controller {
         }
 
         public void InitializeAttacks() {
-            attacks.Add(new BaseKick(this));
-            attacks.Add(new ConflictingAttackTest(this));
-            attacks.Add(new AdvancedAttackTest(this));
+            
         }
 
         private void Start() {
@@ -122,20 +118,7 @@ namespace Player.Base.Controller {
         }
         
         public void Damage(int amount, Attack attack) {
-            if (CanBlock(attack)) {
-                Fms.ChangeState(blocking);
-                Debug.Log("Blocking");
-                return;
-            }
-            health -= amount;
             
-            if (Fms.CurrentState != stunned) {
-                stunned.attackHitWith = attack;
-                Fms.ChangeState(stunned);
-            }
-            
-            else stunned.ExtraHit();
-            TakeKnockback(5f);
         }
 
         public bool CanBlock(Attack attack) {
@@ -143,11 +126,11 @@ namespace Player.Base.Controller {
             Vector2Int playerDirection = DirectionUtils.NumpadToVector(input.direction);
             int otherDirection = DirectionToOtherPlayer();
             
-            Debug.Log($"Player Direction:  {playerDirection.x}, AttackDirection: {otherDirection}, Low Blocking: {attack.LowBlockable}, Crouched: {IsCrouching()}");
+            Debug.Log($"Player Direction:  {playerDirection.x}, AttackDirection: {otherDirection}, Low Blocking: false, Crouched: {IsCrouching()}");
             
             if (otherDirection == playerDirection.x) {
-                if (attack.LowBlockable && IsCrouching()) return true;
-                if (!attack.LowBlockable && !IsCrouching()) return true;
+                //if (attack.LowBlockable && IsCrouching()) return true;
+                //if (!attack.LowBlockable && !IsCrouching()) return true;
             }
 
             return false;

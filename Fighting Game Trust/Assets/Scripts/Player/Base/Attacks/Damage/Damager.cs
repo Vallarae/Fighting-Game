@@ -19,9 +19,11 @@ namespace Player.Base.Attacks.Damage {
         private void FixedUpdate() {
             _frames++;
 
+            /*
             if (_frames >= _attack.HitboxLifetime) {
                 Destroy(gameObject);
             }
+            */
         }
 
         private void OnTriggerEnter(Collider other) {
