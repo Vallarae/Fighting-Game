@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Player.Base.Animations;
 using Player.Base.Attacks.Base;
+using Player.Base.Attacks.Base.Demo;
 using Player.Base.Attacks.Damage;
 using Player.Base.HitboxLookup;
 using Player.Base.InputHandling;
@@ -78,7 +79,7 @@ namespace Player.Base.Controller {
         }
 
         public void InitializeAttacks() {
-            
+            attacks.Add(new DemoAttack());
         }
 
         private void Start() {

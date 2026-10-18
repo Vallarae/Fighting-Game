@@ -34,8 +34,8 @@ namespace Player.Base.Attacks.Base {
         private const int BaseInputScore = 100;
         private const int ComplexityBonus = 50;
 
-        private const int InputBufferFrames = 6;     // QoL: leniency window
-        private const int MaxInputFrames = 30;       // QoL: timeout per attack
+        private const int InputBufferFrames = 6;
+        private const int MaxInputFrames = 30;
 
         public Dictionary<Attack, InputValidator> attackInputs;
         public List<Attack> attacks;
@@ -81,8 +81,6 @@ namespace Player.Base.Attacks.Base {
 
             foreach (Attack attack in attacks) {
                 InputValidator validator = attackInputs[attack];
-
-                // Timeout reset (QoL)
                 if (validator.frames > MaxInputFrames) {
                     validator.Reset();
                     continue;

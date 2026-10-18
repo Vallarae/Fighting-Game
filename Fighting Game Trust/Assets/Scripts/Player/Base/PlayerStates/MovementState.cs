@@ -40,7 +40,6 @@ namespace Player.Base.PlayerStates {
             _moveCooldown++;
 
             if (_moveCooldown > 15) _canMove = true;
-            
             if (_canMove) HandleMovement();
         }
         public void Exit() { }

@@ -6,7 +6,7 @@ namespace Player.Base.Attacks.Base {
     public class Attack {
         //Input Requirements
         public AttackStance requiredStance = AttackStance.Any;
-        public List<int> directionInputs;
+        public List<int> directionInputs = new ();
         public ButtonType button = ButtonType.Punch;
         
         //Frame Data
@@ -18,12 +18,11 @@ namespace Player.Base.Attacks.Base {
         public int cancelWindowEnd;
         
         //Hit Data
-        public List<HitboxDefinition> hitboxes;
+        public List<HitboxDefinition> hitboxes = new ();
+        public List<AttackEvent> events = new ();
+        public HitInfo hitInfo;
         
         //animation
         public string animationName;
-        
-        //events
-        public List<AttackEvent> events;
     }
 }
